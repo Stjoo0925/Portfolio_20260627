@@ -1,0 +1,64 @@
+{
+  "label": "04 — Projects",
+  "title": "Projects",
+  "projects": [
+    {
+      "id": "narrativa",
+      "title": "Narrativa",
+      "type": "Web",
+      "period": {
+        "start": "2024.11.06",
+        "end": "2024.12.20",
+        "duration": "6주"
+      },
+      "team": {
+        "size": 6,
+        "composition": "FE 3 / BE 3 / LLM 공동개발"
+      },
+      "summary": "생성형 AI를 활용한 인터랙티브 스토리텔링 게임 프로젝트",
+      "description": "생성형 AI를 활용한 인터랙티브 스토리텔링 게임 프로젝트입니다. 사용자의 선택에 따라 스토리가 분기되며, LLM을 통해 동적인 내러티브를 생성합니다.",
+      "role": "프로젝트 전반적인 기획 및 설계 참여, 개발 일정 관리 및 업무 배정",
+      "tags": ["React", "TypeScript", "Spring", "MySQL", "Docker", "Firebase", "AWS EC2", "AWS S3"],
+      "links": { "github": "", "demo": "", "detail": "" },
+      "featured": true
+    },
+    {
+      "id": "leafresh",
+      "title": "Leafresh",
+      "type": "Web",
+      "period": {
+        "start": "2024.08.23",
+        "end": "2024.10.02",
+        "duration": "6주"
+      },
+      "team": {
+        "size": 6,
+        "composition": "FE 3 / BE 3"
+      },
+      "summary": "SNS 스타일 원예 커뮤니티 플랫폼",
+      "description": "SNS 스타일 원예 커뮤니티 플랫폼입니다. 식물 관리 기록, 커뮤니티 피드, 사용자 간 소통 기능을 제공합니다.",
+      "role": "프로젝트 기획 및 리드, Git Flow 기반 협업 체계 고도화",
+      "tags": ["Vue", "Pinia", "Spring", "MySQL", "Docker", "Jenkins", "Vercel"],
+      "links": { "github": "", "demo": "", "detail": "" }
+    },
+    {
+      "id": "afterburner",
+      "title": "Afterburner",
+      "type": "Web",
+      "period": {
+        "start": "2024.10",
+        "end": "진행중",
+        "ongoing": true
+      },
+      "team": {
+        "size": 7,
+        "composition": "FE 2 / BE 2 / APP 3"
+      },
+      "summary": "국비지원 교육생을 위한 커리어 성장 플랫폼",
+      "description": "국비지원 교육생을 위한 커리어 성장 플랫폼입니다. 서비스 기획부터 개발까지 전 과정을 담당하며 진행 중입니다.",
+      "role": "프로젝트 기획 및 리드, 서비스 기획부터 개발 진행까지 프로젝트 진행",
+      "tags": ["React", "TailwindCSS", "Mail.js", "Supabase", "Netlify"],
+      "links": { "github": "", "demo": "", "detail": "" }
+    }
+  ]
+}

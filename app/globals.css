@@ -1,26 +1,153 @@
 @import "tailwindcss";
 
+/* ============================================================
+   Constellation Theme
+   - Deep space background
+   - Cyan glow (star nodes) + warm gold (accent)
+   - Editorial typography (Playfair Display headlines)
+   ============================================================ */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Surface */
+  --background: #05070d;
+  --background-elevated: #0a0e18;
+  --foreground: #e8f4ff;
+  --muted: #6b7a90;
+  --border: rgba(95, 212, 255, 0.12);
+
+  /* Accent — cyan star + gold */
+  --accent: #5fd4ff;
+  --accent-soft: rgba(95, 212, 255, 0.16);
+  --accent-glow: rgba(95, 212, 255, 0.55);
+  --gold: #f4c25f;
+  --gold-soft: rgba(244, 194, 95, 0.16);
+
+  /* Typography */
+  --font-sans: var(--font-noto-sans-kr);
+  --font-display: var(--font-playfair-display);
+  --font-mono: var(--font-geist-mono);
+
+  /* Easing — shared with 3D & motion */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-cubic: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-float: cubic-bezier(0.45, 0, 0.55, 1);
+
+  /* Duration */
+  --duration-fast: 150ms;
+  --duration-normal: 300ms;
+  --duration-slow: 600ms;
+
+  /* z-index layering */
+  --z-canvas: 0;
+  --z-content: 10;
+  --z-header: 50;
+  --z-overlay: 100;
+  --z-cursor: 200;
 }
 
 @theme inline {
   --color-background: var(--background);
+  --color-background-elevated: var(--background-elevated);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-gold: var(--gold);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --font-sans: var(--font-noto-sans-kr);
+  --font-display: var(--font-playfair-display);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
+/* Force dark — space mood is always dark */
+@media (prefers-color-scheme: light) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #05070d;
+    --background-elevated: #0a0e18;
+    --foreground: #e8f4ff;
   }
 }
 
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+/* Scroll snap targets — Lenis reads scroll-snap-align */
+.snap-section {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+.snap-section-off {
+  scroll-snap-align: none;
+}
+
 body {
-  background: var(--background);
+  background:
+    radial-gradient(
+      ellipse 80% 60% at 50% 0%,
+      rgba(95, 212, 255, 0.08),
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse 60% 50% at 80% 100%,
+      rgba(244, 194, 95, 0.05),
+      transparent 60%
+    ),
+    var(--background);
+  background-attachment: fixed;
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Star glow utility */
+.star-glow {
+  text-shadow: 0 0 24px var(--accent-glow);
+}
+
+.accent-glow {
+  box-shadow: 0 0 32px var(--accent-glow);
+}
+
+/* Constellation node pulse */
+@keyframes node-pulse {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* HUD scanline overlay (optional, used on overlays) */
+.scanlines::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(95, 212, 255, 0.03) 2px,
+    rgba(95, 212, 255, 0.03) 3px
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

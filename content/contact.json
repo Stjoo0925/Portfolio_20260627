@@ -1,0 +1,29 @@
+{
+  "label": "05 — Contact",
+  "title": "Contact",
+  "body": "프로젝트 제안, 협업 문의 또는 궁금한 점이 있으시다면 언제든지 편하게 연락주세요.",
+  "email": "stjoo0925@gmail.com",
+  "location": "경기도 성남시 분당구",
+  "channels": [
+    {
+      "name": "GitHub",
+      "href": "https://github.com/Stjoo0925",
+      "icon": "Github"
+    },
+    {
+      "name": "Velog",
+      "href": "https://velog.io/@stjoo0925",
+      "icon": "Velog"
+    },
+    {
+      "name": "Instagram",
+      "href": "https://www.instagram.com/soontaejoo",
+      "icon": "Instagram"
+    },
+    {
+      "name": "Mail",
+      "href": "mailto:stjoo0925@gmail.com",
+      "icon": "Mail"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "label": "02 — Skills",
+  "title": "Skills",
+  "categories": [
+    { "name": "Frontend", "items": ["React", "JavaScript", "TypeScript"] },
+    {
+      "name": "Backend",
+      "items": ["Java", "Spring", "ASP.NET", "Node.js", "Python"]
+    },
+    {
+      "name": "DevOps",
+      "items": ["PostgreSQL", "AWS EC2", "Docker", "GitHub Actions"]
+    },
+    { "name": "Collaboration", "items": ["Figma", "GitHub", "Notion"] }
+  ]
+}
