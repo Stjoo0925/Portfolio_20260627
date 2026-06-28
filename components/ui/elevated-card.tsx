@@ -19,11 +19,13 @@ export function ElevatedCard({
   type,
 }: ElevatedCardProps) {
   const classes = cn(
-    "rounded-2xl border bg-background-elevated/60 backdrop-blur-sm transition-[border-color,box-shadow]",
+    "relative overflow-hidden rounded-3xl border transition-all duration-500 ease-out",
+    "bg-white/[0.02] backdrop-blur-2xl",
+    "shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]",
     selected
-      ? "border-accent/60 accent-glow"
-      : "border-border hover:border-accent/40",
-    as === "button" && "group w-full text-left",
+      ? "border-accent/30 bg-white/[0.06] shadow-[0_0_40px_-10px_rgba(95,212,255,0.2),inset_0_1px_1px_rgba(255,255,255,0.15)]"
+      : "border-white/[0.08] hover:border-white/[0.15] hover:bg-white/[0.04]",
+    as === "button" && "group h-full w-full cursor-pointer text-left",
     className,
   );
 

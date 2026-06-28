@@ -10,8 +10,8 @@ export function HeroSection() {
 
   return (
     <ScrollSection id="hero">
-      <div className="max-w-4xl">
-        <p className="text-accent mb-4 font-mono text-xs uppercase tracking-[0.3em]">
+      <div className="w-full max-w-4xl">
+        <p className="text-accent mb-4 font-mono text-[11px] uppercase tracking-[0.24em]">
           {hero.greeting}
         </p>
 

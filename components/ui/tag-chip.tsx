@@ -8,7 +8,7 @@ type TagChipProps = {
 
 const variantClasses: Record<NonNullable<TagChipProps["variant"]>, string> = {
   default:
-    "rounded-full border border-accent/15 bg-accent-soft/60 px-2.5 py-0.5 text-xs text-accent",
+    "rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 text-xs text-foreground/70 group-hover:border-accent/20 group-hover:bg-accent/5 group-hover:text-accent/90 transition-colors duration-300",
   muted:
     "rounded-full border border-border bg-background-elevated/80 px-3 py-1 text-sm text-foreground/90",
   gold:

@@ -51,7 +51,9 @@ export function Nav({
                     className={`whitespace-nowrap font-mono text-xs uppercase tracking-widest transition-colors ${
                       isActive ? "" : "text-muted hover:text-foreground"
                     }`}
-                    style={isActive ? { color: preset.colors.accent } : undefined}
+                    style={
+                      isActive ? { color: preset.colors.accent } : undefined
+                    }
                   >
                     {section.id}
                   </Link>

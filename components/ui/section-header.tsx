@@ -24,7 +24,7 @@ export function SectionHeader({
         {title}
       </h2>
       {lede && (
-        <p className="text-muted text-measure-wide mt-4 text-lg leading-relaxed break-keep">
+        <p className="text-muted text-measure-wide mt-3 text-base leading-relaxed break-keep md:text-lg">
           {lede}
         </p>
       )}

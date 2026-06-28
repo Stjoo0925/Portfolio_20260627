@@ -81,6 +81,16 @@ html.lenis body {
   height: auto;
 }
 
+html {
+  scroll-padding-top: 7rem;
+}
+
+@media (min-width: 768px) {
+  html {
+    scroll-padding-top: 8rem;
+  }
+}
+
 .lenis.lenis-smooth {
   scroll-behavior: auto !important;
 }

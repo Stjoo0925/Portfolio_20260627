@@ -9,6 +9,8 @@ import { SectionHeader } from "@/components/ui/section-header";
 import { WorkCard } from "@/components/ui/work-card";
 import { loadLab } from "@/lib/content/load";
 import type { LabProject } from "@/lib/content/schema";
+import { UNIFORM_BENTO_GRID_CLASS } from "@/lib/ui/bento-grid";
+import { cn } from "@/lib/utils";
 
 function hasRetrospective(project: LabProject) {
   const r = project.retrospective;
@@ -28,12 +30,12 @@ export function LabSection() {
   return (
     <>
       <ScrollSection id="lab" align="start">
-        <FadeIn className="max-w-4xl">
+        <FadeIn className="w-full max-w-6xl">
           <SectionHeader title={data.title} lede={data.intro} />
 
-          <Stagger className="mt-10 grid gap-6 md:grid-cols-2">
+          <Stagger className={cn(UNIFORM_BENTO_GRID_CLASS, "mt-12")}>
             {data.projects.map((p) => (
-              <StaggerItem key={p.id}>
+              <StaggerItem key={p.id} className="min-h-0">
                 <WorkCard
                   type={p.type}
                   title={p.title}
@@ -45,7 +47,7 @@ export function LabSection() {
                   }
                   badge={
                     p.version ? (
-                      <span className="text-accent font-mono text-xs">
+                      <span className="text-accent font-mono text-[11px] uppercase tracking-[0.2em]">
                         v{p.version}
                       </span>
                     ) : undefined
@@ -53,7 +55,7 @@ export function LabSection() {
                   signal={
                     hasRetrospective(p) ? (
                       <span
-                        className="h-2 w-2 rounded-full bg-accent accent-glow"
+                        className="h-2 w-2 rounded-full bg-accent shadow-[0_0_8px_rgba(95,212,255,0.5)]"
                         title="회고 작성됨"
                         aria-label="회고 작성됨"
                       />

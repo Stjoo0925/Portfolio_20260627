@@ -9,6 +9,8 @@ import { SectionHeader } from "@/components/ui/section-header";
 import { WorkCard } from "@/components/ui/work-card";
 import { loadProjects } from "@/lib/content/load";
 import type { Project } from "@/lib/content/schema";
+import { UNIFORM_BENTO_GRID_CLASS } from "@/lib/ui/bento-grid";
+import { cn } from "@/lib/utils";
 
 export function ProjectsSection() {
   const data = loadProjects();
@@ -17,12 +19,12 @@ export function ProjectsSection() {
   return (
     <>
       <ScrollSection id="projects" align="start">
-        <FadeIn className="max-w-4xl">
+        <FadeIn className="w-full max-w-6xl">
           <SectionHeader title={data.title} lede={data.intro} />
 
-          <Stagger className="mt-10 grid gap-6 md:grid-cols-2">
+          <Stagger className={cn(UNIFORM_BENTO_GRID_CLASS, "mt-12")}>
             {data.projects.map((p) => (
-              <StaggerItem key={p.id}>
+              <StaggerItem key={p.id} className="min-h-0">
                 <WorkCard
                   type={p.type}
                   title={p.title}
@@ -34,7 +36,7 @@ export function ProjectsSection() {
                   }
                   badge={
                     p.featured ? (
-                      <span className="text-gold font-mono text-[10px] uppercase tracking-widest">
+                      <span className="text-gold font-mono text-[11px] uppercase tracking-[0.2em]">
                         Featured
                       </span>
                     ) : undefined
