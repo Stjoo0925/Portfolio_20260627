@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import { Suspense } from "react";
 import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
+import { useDetailPanel } from "@/providers/detail-panel-provider";
 import type { Section } from "@/lib/content/schema";
 
 const Experience = dynamic(
@@ -12,6 +13,7 @@ const Experience = dynamic(
 
 export function CanvasWrapper({ sections }: { sections: Section[] }) {
   const prefersReducedMotion = usePrefersReducedMotion();
+  const { isOpen: isDetailPanelOpen } = useDetailPanel();
 
   if (prefersReducedMotion) {
     return null;
@@ -20,10 +22,16 @@ export function CanvasWrapper({ sections }: { sections: Section[] }) {
   return (
     <div
       className="pointer-events-none fixed inset-0"
-      style={{ zIndex: "var(--z-canvas)" }}
+      style={{
+        zIndex: "var(--z-canvas)",
+        visibility: isDetailPanelOpen ? "hidden" : "visible",
+      }}
     >
       <Suspense fallback={null}>
-        <Experience sections={sections} />
+        <Experience
+          sections={sections}
+          frameloop={isDetailPanelOpen ? "never" : "always"}
+        />
       </Suspense>
     </div>
   );

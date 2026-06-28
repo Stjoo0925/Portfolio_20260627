@@ -6,10 +6,17 @@ import { ConstellationScene } from "./constellation-scene";
 import { theme } from "@/lib/theme";
 import type { Section } from "@/lib/content/schema";
 
-export function Experience({ sections }: { sections: Section[] }) {
+export function Experience({
+  sections,
+  frameloop = "always",
+}: {
+  sections: Section[];
+  frameloop?: "always" | "demand" | "never";
+}) {
   return (
     <Canvas
       dpr={[1, 1.5]}
+      frameloop={frameloop}
       gl={{ antialias: true, alpha: true }}
       camera={{ position: [0, 1.5, 4], fov: 45 }}
     >

@@ -3,18 +3,18 @@
 import { Icon } from "@/components/ui/icon";
 import { DetailPanelShell } from "@/components/ui/detail-panel-shell";
 import { RetrospectiveBlock } from "@/components/ui/retrospective-block";
-import type { Project } from "@/lib/content/schema";
+import type { LabProject } from "@/lib/content/schema";
 
-export function ProjectDetailPanel({
+export function LabDetailPanel({
   project,
   onClose,
 }: {
-  project: Project | null;
+  project: LabProject | null;
   onClose: () => void;
 }) {
   if (!project) return null;
 
-  const badge = `${project.type}${project.period.ongoing ? " · 진행중" : ""}`;
+  const badge = `${project.type}${project.version ? ` · v${project.version}` : ""}`;
 
   return (
     <DetailPanelShell
@@ -27,20 +27,23 @@ export function ProjectDetailPanel({
         {project.title}
       </h2>
 
-      <p className="text-muted mt-3 font-mono text-xs">
-        {project.period.start} — {project.period.end}
-        {project.period.duration ? ` (${project.period.duration})` : ""}
-        {" · "}
-        {project.team.size}명 ({project.team.composition})
-      </p>
-
       <p className="mt-6 text-lg text-foreground/90">{project.description}</p>
 
       <div className="mt-8">
         <h3 className="text-gold font-mono text-xs uppercase tracking-widest">
-          주요 역할
+          주요 특징
         </h3>
-        <p className="mt-2 text-foreground/85">{project.role}</p>
+        <ul className="mt-3 space-y-2">
+          {project.highlights.map((item) => (
+            <li
+              key={item}
+              className="text-foreground/85 flex gap-2 text-sm leading-relaxed"
+            >
+              <span className="text-accent">·</span>
+              {item}
+            </li>
+          ))}
+        </ul>
       </div>
 
       <ul className="mt-8 flex flex-wrap gap-2">
@@ -75,16 +78,6 @@ export function ProjectDetailPanel({
             className="flex items-center gap-1.5 text-sm text-foreground/80 transition-colors hover:text-accent"
           >
             <Icon name="ExternalLink" size={14} /> Demo
-          </a>
-        )}
-        {project.links.detail && (
-          <a
-            href={project.links.detail}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1.5 text-sm text-foreground/80 transition-colors hover:text-accent"
-          >
-            <Icon name="ExternalLink" size={14} /> 상세 보기
           </a>
         )}
       </div>

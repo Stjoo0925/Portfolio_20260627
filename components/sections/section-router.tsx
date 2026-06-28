@@ -3,6 +3,7 @@ import { AboutSection } from "./about-section";
 import { SkillsSection } from "./skills-section";
 import { ExperienceSection } from "./experience-section";
 import { ProjectsSection } from "./projects-section";
+import { LabSection } from "./lab-section";
 import { ContactSection } from "./contact-section";
 import type { Section } from "@/lib/content/schema";
 
@@ -18,6 +19,8 @@ export function SectionRouter({ section }: { section: Section }) {
       return <ExperienceSection />;
     case "projects":
       return <ProjectsSection />;
+    case "lab":
+      return <LabSection />;
     case "contact":
       return <ContactSection />;
     default:

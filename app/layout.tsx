@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist_Mono, Noto_Sans_KR, Playfair_Display } from "next/font/google";
 import { siteConfig } from "@/lib/site";
 import { SmoothScrollProvider } from "@/providers/smooth-scroll-provider";
+import { DetailPanelProvider } from "@/providers/detail-panel-provider";
 import "./globals.css";
 
 const notoSansKr = Noto_Sans_KR({
@@ -56,7 +57,9 @@ export default function RootLayout({
       className={`${notoSansKr.variable} ${playfairDisplay.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full font-sans">
-        <SmoothScrollProvider>{children}</SmoothScrollProvider>
+        <DetailPanelProvider>
+          <SmoothScrollProvider>{children}</SmoothScrollProvider>
+        </DetailPanelProvider>
       </body>
     </html>
   );

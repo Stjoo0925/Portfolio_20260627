@@ -3,19 +3,20 @@
 import { useState } from "react";
 import { FadeIn } from "@/components/motion/fade-in";
 import { Stagger, StaggerItem } from "@/components/motion/stagger";
-import { ProjectDetailPanel } from "@/components/ui/project-modal";
+import { LabDetailPanel } from "@/components/ui/lab-detail-panel";
 import { ScrollSection } from "@/components/ui/scroll-section";
-import { loadProjects } from "@/lib/content/load";
-import type { Project } from "@/lib/content/schema";
+import { TagList } from "@/components/ui/tag-list";
+import { loadLab } from "@/lib/content/load";
+import type { LabProject } from "@/lib/content/schema";
 import { cn } from "@/lib/utils";
 
-export function ProjectsSection() {
-  const data = loadProjects();
-  const [selected, setSelected] = useState<Project | null>(null);
+export function LabSection() {
+  const data = loadLab();
+  const [selected, setSelected] = useState<LabProject | null>(null);
 
   return (
     <>
-      <ScrollSection id="projects" align="start">
+      <ScrollSection id="lab" align="start">
         <FadeIn className="max-w-4xl">
           <p className="text-gold mb-4 font-mono text-xs uppercase tracking-[0.3em]">
             {data.label}
@@ -23,10 +24,7 @@ export function ProjectsSection() {
           <h2 className="font-display text-4xl font-bold md:text-6xl">
             {data.title}
           </h2>
-          <p className="text-muted mt-4 max-w-xl">
-            개인 및 팀 프로젝트들을 소개합니다. 다양한 기술 스택과 협업
-            경험을 통해 성장했습니다.
-          </p>
+          <p className="text-muted mt-4 max-w-xl">{data.intro}</p>
 
           <Stagger className="mt-10 grid gap-6 md:grid-cols-2">
             {data.projects.map((p) => (
@@ -47,35 +45,21 @@ export function ProjectsSection() {
                     <span className="text-muted font-mono text-xs uppercase">
                       {p.type}
                     </span>
-                    {p.period.ongoing && (
-                      <span className="text-accent text-xs">진행중</span>
+                    {p.version && (
+                      <span className="text-accent font-mono text-xs">
+                        v{p.version}
+                      </span>
                     )}
                   </div>
                   <h3 className="font-display mt-2 text-2xl">{p.title}</h3>
-                  <p className="text-muted mt-1 font-mono text-xs">
-                    {p.period.start} — {p.period.end}
-                    {p.period.duration ? ` (${p.period.duration})` : ""}
-                  </p>
                   <p className="text-muted mt-3 flex-1 text-sm">{p.summary}</p>
-                  <p className="text-foreground/70 mt-3 line-clamp-2 text-sm">
-                    {p.role}
-                  </p>
 
-                  <ul className="mt-4 flex flex-wrap gap-2">
-                    {p.tags.slice(0, 5).map((t) => (
-                      <li
-                        key={t}
-                        className="rounded-full border border-accent/15 bg-accent-soft/60 px-2.5 py-0.5 text-xs text-accent"
-                      >
-                        {t}
-                      </li>
-                    ))}
-                    {p.tags.length > 5 && (
-                      <li className="text-muted px-1 text-xs">
-                        +{p.tags.length - 5}
-                      </li>
-                    )}
-                  </ul>
+                  <TagList
+                    tags={p.tags}
+                    className="mt-4"
+                    itemClassName="rounded-full border border-accent/15 bg-accent-soft/60 px-2.5 py-0.5 text-xs text-accent"
+                    overflowClassName="text-muted px-1 text-xs"
+                  />
 
                   <span className="text-accent mt-4 text-sm opacity-0 transition-opacity group-hover:opacity-100">
                     {selected?.id === p.id ? "닫기 ✕" : "상세 보기 →"}
@@ -87,10 +71,7 @@ export function ProjectsSection() {
         </FadeIn>
       </ScrollSection>
 
-      <ProjectDetailPanel
-        project={selected}
-        onClose={() => setSelected(null)}
-      />
+      <LabDetailPanel project={selected} onClose={() => setSelected(null)} />
     </>
   );
 }

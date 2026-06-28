@@ -5,12 +5,14 @@ import aboutJson from "@/content/about.json";
 import skillsJson from "@/content/skills.json";
 import experienceJson from "@/content/experience.json";
 import projectsJson from "@/content/projects.json";
+import labJson from "@/content/lab.json";
 import contactJson from "@/content/contact.json";
 import {
   aboutSchema,
   contactSchema,
   experienceSchema,
   heroSchema,
+  labSchema,
   projectsSchema,
   sectionsSchema,
   siteSchema,
@@ -19,6 +21,7 @@ import {
   type Contact,
   type Experience,
   type Hero,
+  type Lab,
   type Projects,
   type Section,
   type Site,
@@ -51,6 +54,10 @@ export function loadExperience(): Experience {
 
 export function loadProjects(): Projects {
   return projectsSchema.parse(projectsJson);
+}
+
+export function loadLab(): Lab {
+  return labSchema.parse(labJson);
 }
 
 export function loadContact(): Contact {

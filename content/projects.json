@@ -20,7 +20,13 @@
       "role": "프로젝트 전반적인 기획 및 설계 참여, 개발 일정 관리 및 업무 배정",
       "tags": ["React", "TypeScript", "Spring", "MySQL", "Docker", "Firebase", "AWS EC2", "AWS S3"],
       "links": { "github": "", "demo": "", "detail": "" },
-      "featured": true
+      "featured": true,
+      "retrospective": {
+        "overview": "",
+        "learnings": [],
+        "challenges": [],
+        "nextSteps": ""
+      }
     },
     {
       "id": "leafresh",
@@ -39,7 +45,13 @@
       "description": "SNS 스타일 원예 커뮤니티 플랫폼입니다. 식물 관리 기록, 커뮤니티 피드, 사용자 간 소통 기능을 제공합니다.",
       "role": "프로젝트 기획 및 리드, Git Flow 기반 협업 체계 고도화",
       "tags": ["Vue", "Pinia", "Spring", "MySQL", "Docker", "Jenkins", "Vercel"],
-      "links": { "github": "", "demo": "", "detail": "" }
+      "links": { "github": "", "demo": "", "detail": "" },
+      "retrospective": {
+        "overview": "",
+        "learnings": [],
+        "challenges": [],
+        "nextSteps": ""
+      }
     },
     {
       "id": "afterburner",
@@ -58,7 +70,13 @@
       "description": "국비지원 교육생을 위한 커리어 성장 플랫폼입니다. 서비스 기획부터 개발까지 전 과정을 담당하며 진행 중입니다.",
       "role": "프로젝트 기획 및 리드, 서비스 기획부터 개발 진행까지 프로젝트 진행",
       "tags": ["React", "TailwindCSS", "Mail.js", "Supabase", "Netlify"],
-      "links": { "github": "", "demo": "", "detail": "" }
+      "links": { "github": "", "demo": "", "detail": "" },
+      "retrospective": {
+        "overview": "",
+        "learnings": [],
+        "challenges": [],
+        "nextSteps": ""
+      }
     }
   ]
 }

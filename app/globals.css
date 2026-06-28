@@ -87,6 +87,27 @@ html.lenis body {
   scroll-snap-align: none;
 }
 
+.detail-panel {
+  animation: detail-panel-in 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: transform;
+}
+
+@keyframes detail-panel-in {
+  from {
+    transform: translate3d(100%, 0, 0);
+  }
+
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .detail-panel {
+    animation: none;
+  }
+}
+
 body {
   background:
     radial-gradient(

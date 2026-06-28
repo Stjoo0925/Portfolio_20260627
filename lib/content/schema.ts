@@ -19,6 +19,7 @@ export const sectionKindSchema = z.enum([
   "skills",
   "experience",
   "projects",
+  "lab",
   "contact",
 ]);
 
@@ -94,6 +95,13 @@ export const skillsSchema = z.object({
   ),
 });
 
+export const retrospectiveSchema = z.object({
+  overview: z.string().optional(),
+  learnings: z.array(z.string()).optional(),
+  challenges: z.array(z.string()).optional(),
+  nextSteps: z.string().optional(),
+});
+
 export const projectSchema = z.object({
   id: z.string(),
   title: z.string(),
@@ -119,12 +127,36 @@ export const projectSchema = z.object({
     detail: z.string().optional(),
   }),
   featured: z.boolean().optional(),
+  retrospective: retrospectiveSchema.optional(),
 });
 
 export const projectsSchema = z.object({
   label: z.string(),
   title: z.string(),
   projects: z.array(projectSchema),
+});
+
+export const labProjectSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  type: z.string(),
+  version: z.string().nullable().optional(),
+  summary: z.string(),
+  description: z.string(),
+  highlights: z.array(z.string()),
+  tags: z.array(z.string()),
+  links: z.object({
+    github: z.string().optional(),
+    demo: z.string().optional(),
+  }),
+  retrospective: retrospectiveSchema.optional(),
+});
+
+export const labSchema = z.object({
+  label: z.string(),
+  title: z.string(),
+  intro: z.string(),
+  projects: z.array(labProjectSchema),
 });
 
 export const contactSchema = z.object({
@@ -149,7 +181,10 @@ export type CareerItem = z.infer<typeof careerItemSchema>;
 export type EducationItem = z.infer<typeof educationItemSchema>;
 export type TrainingItem = z.infer<typeof trainingItemSchema>;
 export type CertificateItem = z.infer<typeof certificateItemSchema>;
+export type Retrospective = z.infer<typeof retrospectiveSchema>;
 export type Project = z.infer<typeof projectSchema>;
 export type Projects = z.infer<typeof projectsSchema>;
+export type LabProject = z.infer<typeof labProjectSchema>;
+export type Lab = z.infer<typeof labSchema>;
 export type Contact = z.infer<typeof contactSchema>;
 export type Cta = z.infer<typeof ctaSchema>;
