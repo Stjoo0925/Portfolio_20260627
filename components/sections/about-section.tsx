@@ -17,15 +17,7 @@ export function AboutSection() {
         <ElevatedCard className="mt-12 p-0">
           <Stagger>
             <StaggerItem>
-              <div className="px-8 py-9 md:px-10 md:py-10">
-                <p className="text-measure-wide text-lg leading-relaxed text-foreground/90 break-keep md:text-xl">
-                  {about.intro}
-                </p>
-              </div>
-            </StaggerItem>
-
-            <StaggerItem>
-              <div className="border-t border-white/[0.08] px-8 py-9 md:px-10 md:py-10">
+              <div className="border-t border-white/8 px-8 py-9 md:px-10 md:py-10">
                 <blockquote className="relative pl-6 before:absolute before:top-1 before:bottom-1 before:left-0 before:w-px before:bg-gold/45">
                   <p className="font-display text-xl leading-relaxed text-foreground/90 italic break-keep md:text-2xl">
                     {about.quote}
@@ -35,7 +27,15 @@ export function AboutSection() {
             </StaggerItem>
 
             <StaggerItem>
-              <div className="space-y-6 border-t border-white/[0.08] px-8 py-9 md:px-10 md:py-10">
+              <div className="px-8 py-9 md:px-10 md:py-10">
+                <p className="max-w-4xl text-readable text-pretty text-prose text-lg text-foreground/90 md:text-xl">
+                  {about.intro}
+                </p>
+              </div>
+            </StaggerItem>
+
+            <StaggerItem>
+              <div className="space-y-6 border-t border-white/8 px-8 py-9 md:px-10 md:py-10">
                 {about.paragraphs.map((paragraph, index) => (
                   <p
                     key={index}
