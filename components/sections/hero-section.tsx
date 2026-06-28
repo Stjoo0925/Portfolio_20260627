@@ -23,7 +23,7 @@ export function HeroSection() {
           <RoleCycle roles={hero.roles} />
         </p>
 
-        <p className="text-muted mt-8 max-w-xl text-lg text-prose">
+        <p className="text-muted text-measure-wide mt-8 text-lg text-prose break-keep">
           {hero.tagline}
         </p>
 

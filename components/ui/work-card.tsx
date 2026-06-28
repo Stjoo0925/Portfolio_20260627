@@ -45,13 +45,17 @@ export function WorkCard({
         </div>
       </div>
 
-      <h3 className="font-display mt-2 text-2xl">{title}</h3>
+      <h3 className="font-display mt-2 text-balance break-keep text-2xl leading-snug">
+        {title}
+      </h3>
 
       {meta && (
-        <div className="text-muted mt-1 font-mono text-xs">{meta}</div>
+        <div className="text-muted mt-1 font-mono text-xs leading-relaxed break-keep">
+          {meta}
+        </div>
       )}
 
-      <p className="text-muted mt-3 flex-1 text-sm leading-relaxed">
+      <p className="text-muted mt-3 flex-1 text-sm leading-relaxed break-keep">
         {summary}
       </p>
 

@@ -1,11 +1,11 @@
 {
   "sections": [
-    { "id": "hero",       "kind": "hero",       "node": [0, 0, 0] },
-    { "id": "about",      "kind": "about",      "node": [4, 1.2, -5] },
-    { "id": "skills",     "kind": "skills",     "node": [8, -0.4, -10] },
-    { "id": "experience", "kind": "experience", "node": [13, 1.6, -16] },
-    { "id": "projects",   "kind": "projects",   "node": [18, 0.2, -21] },
-    { "id": "lab",        "kind": "lab",        "node": [22, 1.8, -26] },
-    { "id": "contact",    "kind": "contact",    "node": [26, 0.6, -31] }
+    { "id": "hero",       "kind": "hero",       "node": [0, 3.2, 12] },
+    { "id": "about",      "kind": "about",      "node": [0, 3.0, -28] },
+    { "id": "skills",     "kind": "skills",     "node": [1.2, 2.8, -58] },
+    { "id": "experience", "kind": "experience", "node": [-0.8, 3.4, -88] },
+    { "id": "projects",   "kind": "projects",   "node": [0, 2.6, -118] },
+    { "id": "lab",        "kind": "lab",        "node": [0.5, 3.8, -148] },
+    { "id": "contact",    "kind": "contact",    "node": [0, 2.4, -178] }
   ]
 }

@@ -4,190 +4,184 @@ export const HOME_SECTION_ID = "hero";
 
 export type SectionAtmosphere = "deep" | "fog" | "clear" | "storm" | "dawn";
 
-export type SectionVisualPreset = {
+export type ParticleShape =
+  | "sphere"
+  | "wave"
+  | "torus"
+  | "ribbon"
+  | "nebula"
+  | "stream"
+  | "horizon";
+
+export type FluidParticlePreset = {
   id: string;
   name: string;
-  narrative: string;
   atmosphere: SectionAtmosphere;
-  primary: string;
-  secondary: string;
-  tertiary: string;
-  dust: string;
-  starDensity: number;
-  cloudScale: [number, number, number];
-  cloudOpacity: number;
-  turbulence: number;
-  cameraOffset: [number, number, number];
-  lookOffset: [number, number, number];
-  orbitRadius: number;
-  orbitSpeed: number;
-  verticalDrift: number;
-  roll: number;
-  pathOpacity: number;
-  nodeForm: "core" | "halo" | "cluster" | "ribbon" | "stage" | "chaos" | "arrival";
+  colors: {
+    primary: string;
+    secondary: string;
+    accent: string;
+    background: string;
+  };
+  particle: {
+    shape: ParticleShape;
+    turbulence: number;
+    speed: number;
+    size: number;
+    spread: number;
+    curlScale: number;
+    glow: number;
+  };
+  camera: {
+    position: [number, number, number];
+    lookAt: [number, number, number];
+    drift: number;
+    driftSpeed: number;
+  };
 };
 
-const fallbackVisualPreset: SectionVisualPreset = {
+const ambientParticle = {
+  shape: "sphere" as const,
+  turbulence: 0.55,
+  speed: 0.04,
+  size: 1.2,
+  spread: 4.5,
+  curlScale: 0.32,
+  glow: 0.2,
+};
+
+const ambientCamera = {
+  position: [0, 0.5, 11] as [number, number, number],
+  lookAt: [0, 0, 0] as [number, number, number],
+  drift: 0.1,
+  driftSpeed: 0.035,
+};
+
+const fallbackPreset: FluidParticlePreset = {
   id: HOME_SECTION_ID,
   name: "Hero",
-  narrative: "",
   atmosphere: "deep",
-  primary: "#4ec8e8",
-  secondary: "#0d2847",
-  tertiary: "#7dd3fc",
-  dust: "#c8f4ff",
-  starDensity: 1,
-  cloudScale: [22, 14, 1],
-  cloudOpacity: 0.38,
-  turbulence: 0.5,
-  cameraOffset: [-1.2, 1.7, 5.4],
-  lookOffset: [0.4, 0.05, -0.35],
-  orbitRadius: 0.26,
-  orbitSpeed: 0.16,
-  verticalDrift: 0.22,
-  roll: 0.015,
-  pathOpacity: 0.16,
-  nodeForm: "core",
+  colors: {
+    primary: "#121820",
+    secondary: "#0a0e14",
+    accent: "#5fd4ff",
+    background: "#030508",
+  },
+  particle: ambientParticle,
+  camera: ambientCamera,
 };
 
-export const sectionVisualPresets: Record<string, SectionVisualPreset> = {
-  hero: fallbackVisualPreset,
+export const fluidParticlePresets: Record<string, FluidParticlePreset> = {
+  hero: fallbackPreset,
   about: {
     id: "about",
     name: "About",
-    narrative: "",
     atmosphere: "fog",
-    primary: "#66f2ff",
-    secondary: "#2f8f9f",
-    tertiary: "#ffd17a",
-    dust: "#e5fff8",
-    starDensity: 0.86,
-    cloudScale: [19, 16, 1],
-    cloudOpacity: 0.44,
-    turbulence: 0.38,
-    cameraOffset: [-1.6, 1.35, 4.9],
-    lookOffset: [0.7, 0.1, -0.55],
-    orbitRadius: 0.38,
-    orbitSpeed: 0.19,
-    verticalDrift: 0.16,
-    roll: -0.022,
-    pathOpacity: 0.2,
-    nodeForm: "halo",
+    colors: {
+      primary: "#101820",
+      secondary: "#0a0e14",
+      accent: "#66f2ff",
+      background: "#030508",
+    },
+    particle: { ...ambientParticle, turbulence: 0.5, glow: 0.18 },
+    camera: ambientCamera,
   },
   skills: {
     id: "skills",
     name: "Skills",
-    narrative: "",
     atmosphere: "clear",
-    primary: "#58e5ff",
-    secondary: "#6e5bff",
-    tertiary: "#f4c25f",
-    dust: "#b7c7ff",
-    starDensity: 1.14,
-    cloudScale: [24, 10, 1],
-    cloudOpacity: 0.46,
-    turbulence: 0.64,
-    cameraOffset: [-2.15, 1.15, 4.35],
-    lookOffset: [1.0, -0.05, -0.75],
-    orbitRadius: 0.58,
-    orbitSpeed: 0.24,
-    verticalDrift: 0.12,
-    roll: 0.035,
-    pathOpacity: 0.26,
-    nodeForm: "cluster",
+    colors: {
+      primary: "#101420",
+      secondary: "#0a0c14",
+      accent: "#6e5bff",
+      background: "#030508",
+    },
+    particle: { ...ambientParticle, turbulence: 0.6, glow: 0.22 },
+    camera: ambientCamera,
   },
   experience: {
     id: "experience",
     name: "Experience",
-    narrative: "",
     atmosphere: "fog",
-    primary: "#7bc8ff",
-    secondary: "#20406f",
-    tertiary: "#ffb75f",
-    dust: "#fff1c7",
-    starDensity: 0.94,
-    cloudScale: [30, 8, 1],
-    cloudOpacity: 0.4,
-    turbulence: 0.46,
-    cameraOffset: [-2.35, 1.65, 4.6],
-    lookOffset: [1.2, -0.16, -0.85],
-    orbitRadius: 0.46,
-    orbitSpeed: 0.15,
-    verticalDrift: 0.24,
-    roll: -0.045,
-    pathOpacity: 0.36,
-    nodeForm: "ribbon",
+    colors: {
+      primary: "#101820",
+      secondary: "#0a0e14",
+      accent: "#ffb75f",
+      background: "#030508",
+    },
+    particle: { ...ambientParticle, turbulence: 0.48, glow: 0.17 },
+    camera: ambientCamera,
   },
   projects: {
     id: "projects",
     name: "Projects",
-    narrative: "",
     atmosphere: "clear",
-    primary: "#8eeaff",
-    secondary: "#061a33",
-    tertiary: "#f6c35f",
-    dust: "#d9f7ff",
-    starDensity: 0.72,
-    cloudScale: [18, 13, 1],
-    cloudOpacity: 0.31,
-    turbulence: 0.28,
-    cameraOffset: [-1.0, 1.45, 5.15],
-    lookOffset: [0.45, 0.04, -0.35],
-    orbitRadius: 0.2,
-    orbitSpeed: 0.13,
-    verticalDrift: 0.08,
-    roll: 0.01,
-    pathOpacity: 0.18,
-    nodeForm: "stage",
+    colors: {
+      primary: "#0e141c",
+      secondary: "#080c12",
+      accent: "#8eeaff",
+      background: "#030508",
+    },
+    particle: { ...ambientParticle, turbulence: 0.58, glow: 0.2 },
+    camera: ambientCamera,
   },
   lab: {
     id: "lab",
     name: "Lab",
-    narrative: "",
     atmosphere: "storm",
-    primary: "#ff4fd8",
-    secondary: "#6a3dff",
-    tertiary: "#4efcff",
-    dust: "#ffd6fa",
-    starDensity: 1.38,
-    cloudScale: [22, 18, 1],
-    cloudOpacity: 0.54,
-    turbulence: 0.9,
-    cameraOffset: [-1.8, 1.8, 4.3],
-    lookOffset: [0.95, -0.22, -0.8],
-    orbitRadius: 0.74,
-    orbitSpeed: 0.34,
-    verticalDrift: 0.36,
-    roll: 0.07,
-    pathOpacity: 0.3,
-    nodeForm: "chaos",
+    colors: {
+      primary: "#141018",
+      secondary: "#0c0a12",
+      accent: "#ff4fd8",
+      background: "#030508",
+    },
+    particle: { ...ambientParticle, turbulence: 0.65, glow: 0.24 },
+    camera: ambientCamera,
   },
   contact: {
     id: "contact",
     name: "Contact",
-    narrative: "",
     atmosphere: "dawn",
-    primary: "#fff2c6",
-    secondary: "#6fdfff",
-    tertiary: "#ffffff",
-    dust: "#fff9e6",
-    starDensity: 0.82,
-    cloudScale: [28, 20, 1],
-    cloudOpacity: 0.42,
-    turbulence: 0.34,
-    cameraOffset: [-0.4, 2.25, 6.5],
-    lookOffset: [0.12, 0.18, -0.7],
-    orbitRadius: 0.34,
-    orbitSpeed: 0.11,
-    verticalDrift: 0.18,
-    roll: -0.018,
-    pathOpacity: 0.22,
-    nodeForm: "arrival",
+    colors: {
+      primary: "#141210",
+      secondary: "#0c0a08",
+      accent: "#fff2c6",
+      background: "#050408",
+    },
+    particle: { ...ambientParticle, turbulence: 0.45, glow: 0.16 },
+    camera: ambientCamera,
   },
 };
 
-export function getSectionVisualPreset(sectionId: string) {
-  return sectionVisualPresets[sectionId] ?? fallbackVisualPreset;
+export function getFluidParticlePreset(sectionId: string): FluidParticlePreset {
+  return fluidParticlePresets[sectionId] ?? fallbackPreset;
+}
+
+/** @deprecated Use getFluidParticlePreset */
+export function getTerrainZonePreset(sectionId: string) {
+  const preset = getFluidParticlePreset(sectionId);
+  return {
+    id: preset.id,
+    name: preset.name,
+    atmosphere: preset.atmosphere,
+    colors: {
+      primary: preset.colors.primary,
+      secondary: preset.colors.secondary,
+      emissive: preset.colors.accent,
+      fog: preset.colors.background,
+      sky: preset.colors.background,
+    },
+    terrain: {
+      displacement: 0,
+      roughness: 0,
+      noiseScale: 0,
+      canyonWidth: 0,
+      emissiveStrength: 0,
+    },
+    waypoint: preset.camera.position,
+    lookAhead: preset.camera.lookAt,
+    uiOffset: [0, 0, 0] as [number, number, number],
+  };
 }
 
 export function getSectionHref(sectionId: string) {

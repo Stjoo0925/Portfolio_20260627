@@ -21,6 +21,14 @@ export function TagChip({
   variant = "default",
 }: TagChipProps) {
   return (
-    <span className={cn(variantClasses[variant], className)}>{children}</span>
+    <span
+      className={cn(
+        "inline-block max-w-full break-keep",
+        variantClasses[variant],
+        className,
+      )}
+    >
+      {children}
+    </span>
   );
 }

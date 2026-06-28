@@ -11,7 +11,7 @@ import {
   getActiveSection,
   getSectionHref,
   getSectionNeighbors,
-  getSectionVisualPreset,
+  getFluidParticlePreset,
 } from "@/lib/section-routes";
 import { cn } from "@/lib/utils";
 import type { Section } from "@/lib/content/schema";
@@ -26,20 +26,31 @@ export function PortfolioShell({
   const pathname = usePathname();
   const prefersReducedMotion = usePrefersReducedMotion();
   const activeSection = getActiveSection(pathname, sections);
-  const preset = getSectionVisualPreset(activeSection.id);
+  const preset = getFluidParticlePreset(activeSection.id);
   const { previous, next } = getSectionNeighbors(activeSection.id, sections);
 
   useEffect(() => {
-    document.documentElement.style.setProperty("--section-accent", preset.primary);
+    document.documentElement.style.setProperty("--section-accent", preset.colors.accent);
     document.documentElement.style.setProperty(
       "--section-accent-soft",
-      `${preset.primary}29`,
+      `${preset.colors.accent}29`,
     );
-  }, [preset.primary]);
+  }, [preset.colors.accent]);
 
   return (
     <>
       <CanvasWrapper sections={sections} activeSectionId={activeSection.id} />
+
+      {!prefersReducedMotion && (
+        <div
+          className="pointer-events-none fixed inset-0"
+          style={{ zIndex: "calc(var(--z-canvas) + 1)" }}
+          aria-hidden
+        >
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_70%_at_20%_50%,rgba(3,5,8,0.72)_0%,rgba(3,5,8,0.35)_45%,transparent_75%)]" />
+        </div>
+      )}
+
       <Nav sections={sections} activeSectionId={activeSection.id} />
 
       <AnimatePresence mode="wait" initial={false}>

@@ -1,9 +1,9 @@
 "use client";
 
 import { useFrame, useThree } from "@react-three/fiber";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { Vector3 } from "three";
-import { getSectionVisualPreset } from "@/lib/section-routes";
+import { getFluidParticlePreset } from "@/lib/section-routes";
 import type { Section } from "@/lib/content/schema";
 
 function WakeCanvas({ activeSectionId }: { activeSectionId: string }) {
@@ -31,41 +31,38 @@ export function CameraRig({
 }) {
   const { camera } = useThree();
   const invalidate = useThree((state) => state.invalidate);
-  const target = useMemo(() => new Vector3(), []);
-  const look = useMemo(() => new Vector3(), []);
+  const targetPos = useMemo(() => new Vector3(), []);
+  const targetLook = useMemo(() => new Vector3(), []);
+  const smoothPos = useRef(new Vector3(0, 0.5, 11));
+  const smoothLook = useRef(new Vector3(0, 0, 0));
 
-  useFrame((state) => {
+  useFrame((state, delta) => {
     if (sections.length === 0) return;
 
-    const activeIndex = Math.max(
-      0,
-      sections.findIndex((section) => section.id === activeSectionId),
-    );
-    const active = sections[activeIndex];
-    const node = active.node;
-    const preset = getSectionVisualPreset(active.id);
+    const preset = getFluidParticlePreset(activeSectionId);
     const time = state.clock.elapsedTime;
-    const orbitX = Math.sin(time * preset.orbitSpeed) * preset.orbitRadius;
-    const orbitZ =
-      Math.cos(time * preset.orbitSpeed * 0.8) * preset.orbitRadius;
-    const driftY = Math.sin(time * 0.21 + activeIndex) * preset.verticalDrift;
+    const drift = preset.camera.drift;
+    const speed = preset.camera.driftSpeed;
 
-    target.set(
-      node[0] + preset.cameraOffset[0] + orbitX,
-      node[1] + preset.cameraOffset[1] + driftY,
-      node[2] + preset.cameraOffset[2] + orbitZ,
+    const orbitX = Math.sin(time * speed) * drift;
+    const orbitY = Math.cos(time * speed * 0.7) * drift * 0.35;
+
+    targetPos.set(
+      preset.camera.position[0] + orbitX,
+      preset.camera.position[1] + orbitY,
+      preset.camera.position[2],
     );
-    look.set(
-      node[0] + preset.lookOffset[0],
-      node[1] + preset.lookOffset[1] + driftY * 0.25,
-      node[2] + preset.lookOffset[2],
+    targetLook.set(
+      preset.camera.lookAt[0],
+      preset.camera.lookAt[1],
+      preset.camera.lookAt[2],
     );
 
-    camera.position.lerp(target, 0.045);
-    camera.lookAt(look);
-    camera.rotateZ(
-      Math.sin(time * preset.orbitSpeed * 1.7 + activeIndex) * preset.roll,
-    );
+    smoothPos.current.lerp(targetPos, delta * 1.2);
+    smoothLook.current.lerp(targetLook, delta * 1.2);
+
+    camera.position.copy(smoothPos.current);
+    camera.lookAt(smoothLook.current);
 
     invalidate();
   });

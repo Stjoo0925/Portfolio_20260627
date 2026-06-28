@@ -60,7 +60,7 @@ export default function RootLayout({
       lang="ko"
       className={`${notoSansKr.variable} ${playfairDisplay.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full font-sans">
+      <body className="min-h-full select-none font-sans">
         <DetailPanelProvider>
           <SmoothScrollProvider>
             <PortfolioShell sections={sections}>{children}</PortfolioShell>

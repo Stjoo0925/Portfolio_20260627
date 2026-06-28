@@ -133,6 +133,7 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans), sans-serif;
   -webkit-font-smoothing: antialiased;
+  user-select: none;
 }
 
 /* Star glow utility */
@@ -152,6 +153,41 @@ body {
 
 .text-prose {
   line-height: var(--leading-prose);
+}
+
+/* Readable Korean / mixed copy */
+.text-readable {
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+.text-readable-en {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.text-measure {
+  max-width: 65ch;
+}
+
+.text-measure-wide {
+  max-width: 72ch;
+}
+
+.detail-body {
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+.detail-body :where(a[href]) {
+  overflow-wrap: anywhere;
+  word-break: break-all;
+}
+
+.detail-body :where(pre, code) {
+  overflow-x: auto;
+  word-break: break-all;
+  white-space: pre-wrap;
 }
 
 .prose-columns {

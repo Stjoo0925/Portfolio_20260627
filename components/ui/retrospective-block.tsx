@@ -20,15 +20,15 @@ function ListSection({
 
   return (
     <div>
-      <h4 className="text-foreground/80 text-sm font-medium">{title}</h4>
+      <h4 className="text-sm font-medium text-foreground/80">{title}</h4>
       <ul className="mt-2 space-y-2">
         {items.map((item) => (
           <li
             key={item}
-            className="text-foreground/75 flex gap-2 text-sm leading-relaxed"
+            className="flex gap-2 text-sm leading-relaxed text-foreground/75"
           >
-            <span className="text-accent shrink-0">·</span>
-            {item}
+            <span className="text-accent mt-0.5 shrink-0">·</span>
+            <span className="min-w-0 flex-1">{item}</span>
           </li>
         ))}
       </ul>
@@ -54,7 +54,7 @@ export function RetrospectiveBlock({
       {filled ? (
         <div className="mt-4 space-y-6">
           {retrospective.overview?.trim() && (
-            <p className="text-foreground/85 text-sm leading-relaxed">
+            <p className="text-measure-wide text-sm leading-relaxed text-foreground/85">
               {retrospective.overview}
             </p>
           )}
@@ -65,17 +65,17 @@ export function RetrospectiveBlock({
           />
           {retrospective.nextSteps?.trim() && (
             <div>
-              <h4 className="text-foreground/80 text-sm font-medium">
+              <h4 className="text-sm font-medium text-foreground/80">
                 다음에 개선할 점
               </h4>
-              <p className="text-foreground/75 mt-2 text-sm leading-relaxed">
+              <p className="text-measure-wide mt-2 text-sm leading-relaxed text-foreground/75">
                 {retrospective.nextSteps}
               </p>
             </div>
           )}
         </div>
       ) : (
-        <p className="text-muted mt-4 text-sm leading-relaxed">
+        <p className="mt-4 text-sm leading-relaxed text-muted">
           프로젝트 회고를 작성해 주세요. JSON의{" "}
           <code className="text-accent/90">retrospective</code> 필드에 내용을
           추가하면 여기에 표시됩니다.

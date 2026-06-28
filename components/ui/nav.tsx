@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import {
   getActiveSection,
   getSectionHref,
-  getSectionVisualPreset,
+  getFluidParticlePreset,
 } from "@/lib/section-routes";
 import { siteConfig } from "@/lib/site";
 import type { Section } from "@/lib/content/schema";
@@ -42,7 +42,7 @@ export function Nav({
             .filter((section) => section.kind !== "hero")
             .map((section) => {
               const isActive = active === section.id;
-              const preset = getSectionVisualPreset(section.id);
+              const preset = getFluidParticlePreset(section.id);
 
               return (
                 <li key={section.id}>
@@ -51,7 +51,7 @@ export function Nav({
                     className={`whitespace-nowrap font-mono text-xs uppercase tracking-widest transition-colors ${
                       isActive ? "" : "text-muted hover:text-foreground"
                     }`}
-                    style={isActive ? { color: preset.primary } : undefined}
+                    style={isActive ? { color: preset.colors.accent } : undefined}
                   >
                     {section.id}
                   </Link>

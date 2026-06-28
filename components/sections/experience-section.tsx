@@ -13,8 +13,8 @@ function ExperienceColumn({
   children: React.ReactNode;
 }) {
   return (
-    <StaggerItem>
-      <ElevatedCard className="flex h-full flex-col p-6">
+    <StaggerItem className="min-w-0">
+      <ElevatedCard className="flex h-full min-w-0 flex-col p-6">
         <h3 className="text-gold mb-5 font-mono text-xs uppercase tracking-[0.2em]">
           {title}
         </h3>
@@ -40,14 +40,14 @@ function ExperienceItem({
   return (
     <li className="relative pl-5">
       <span className="accent-glow absolute top-1.5 left-0 h-2 w-2 rounded-full bg-accent" />
-      <h4 className="font-display text-base leading-snug">{title}</h4>
+      <h4 className="font-display text-base leading-snug break-keep">{title}</h4>
       {period && (
-        <p className="text-muted mt-1 font-mono text-xs tracking-wide">
+        <p className="text-muted mt-1 font-mono text-xs leading-relaxed tracking-wide break-keep">
           {period}
         </p>
       )}
       {subtitle && (
-        <p className="text-foreground/80 mt-1 text-sm leading-relaxed">
+        <p className="text-foreground/80 mt-1 text-sm leading-relaxed break-keep">
           {subtitle}
         </p>
       )}
@@ -61,10 +61,10 @@ export function ExperienceSection() {
 
   return (
     <ScrollSection id="experience">
-      <FadeIn className="w-full max-w-6xl">
+      <FadeIn className="w-full max-w-[90rem]">
         <SectionHeader title={exp.title} />
 
-        <Stagger className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <Stagger className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
           <ExperienceColumn title="Career">
             {exp.career.map((item) => (
               <ExperienceItem

@@ -24,7 +24,9 @@ export function LabDetailPanel({
       badge={badge}
       onClose={onClose}
     >
-      <p className="text-lg text-foreground/90">{project.description}</p>
+      <p className="text-measure-wide text-lg leading-relaxed text-foreground/90">
+        {project.description}
+      </p>
 
       <div className="mt-8">
         <h3 className="text-gold font-mono text-xs uppercase tracking-widest">
@@ -34,10 +36,10 @@ export function LabDetailPanel({
           {project.highlights.map((item) => (
             <li
               key={item}
-              className="text-foreground/85 flex gap-2 text-sm leading-relaxed"
+              className="flex gap-2 text-sm leading-relaxed text-foreground/85"
             >
-              <span className="text-accent">·</span>
-              {item}
+              <span className="text-accent mt-0.5 shrink-0">·</span>
+              <span className="min-w-0 flex-1">{item}</span>
             </li>
           ))}
         </ul>
@@ -45,7 +47,7 @@ export function LabDetailPanel({
 
       <ul className="mt-8 flex flex-wrap gap-2">
         {project.tags.map((tag) => (
-          <li key={tag}>
+          <li key={tag} className="max-w-full">
             <TagChip>{tag}</TagChip>
           </li>
         ))}
@@ -53,15 +55,16 @@ export function LabDetailPanel({
 
       <RetrospectiveBlock retrospective={project.retrospective ?? {}} />
 
-      <div className="mt-10 flex flex-wrap gap-4">
+      <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-4">
         {project.links.github && (
           <a
             href={project.links.github}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 text-sm text-foreground/80 transition-colors hover:text-accent"
+            className="inline-flex max-w-full items-start gap-1.5 text-sm leading-snug text-foreground/80 transition-colors hover:text-accent"
           >
-            <Icon name="Github" size={14} /> GitHub Repository
+            <Icon name="Github" size={14} className="mt-0.5 shrink-0" />
+            <span className="text-readable-en">GitHub Repository</span>
           </a>
         )}
         {project.links.demo && (
@@ -69,9 +72,10 @@ export function LabDetailPanel({
             href={project.links.demo}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 text-sm text-foreground/80 transition-colors hover:text-accent"
+            className="inline-flex max-w-full items-start gap-1.5 text-sm leading-snug text-foreground/80 transition-colors hover:text-accent"
           >
-            <Icon name="ExternalLink" size={14} /> Demo
+            <Icon name="ExternalLink" size={14} className="mt-0.5 shrink-0" />
+            <span className="text-readable-en">Demo</span>
           </a>
         )}
       </div>
