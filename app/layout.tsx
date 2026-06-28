@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist_Mono, Noto_Sans_KR, Playfair_Display } from "next/font/google";
 import { siteConfig } from "@/lib/site";
+import { loadSections } from "@/lib/content/load";
+import { PortfolioShell } from "@/components/layout/portfolio-shell";
 import { SmoothScrollProvider } from "@/providers/smooth-scroll-provider";
 import { DetailPanelProvider } from "@/providers/detail-panel-provider";
 import "./globals.css";
@@ -51,6 +53,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const sections = loadSections();
+
   return (
     <html
       lang="ko"
@@ -58,7 +62,9 @@ export default function RootLayout({
     >
       <body className="min-h-full font-sans">
         <DetailPanelProvider>
-          <SmoothScrollProvider>{children}</SmoothScrollProvider>
+          <SmoothScrollProvider>
+            <PortfolioShell sections={sections}>{children}</PortfolioShell>
+          </SmoothScrollProvider>
         </DetailPanelProvider>
       </body>
     </html>

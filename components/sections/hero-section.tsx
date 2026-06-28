@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { ScrollSection } from "@/components/ui/scroll-section";
 import { RoleCycle } from "@/components/ui/role-cycle";
 import { Icon } from "@/components/ui/icon";
@@ -22,19 +23,23 @@ export function HeroSection() {
 
         <div className="mt-10 flex flex-wrap gap-4">
           {hero.cta.map((c) => (
-            <a
+            <Link
               key={c.label}
               href={c.href}
               className="accent-glow flex items-center gap-2 rounded-full border border-accent/30 bg-accent-soft px-6 py-3 text-sm font-medium transition-colors hover:bg-accent/20"
             >
               {c.label}
-            </a>
+            </Link>
           ))}
         </div>
 
-        <div className="mt-16 text-accent">
+        <Link
+          href="/about"
+          aria-label="Go to about"
+          className="mt-16 inline-flex text-accent"
+        >
           <Icon name="ArrowDown" size={20} className="animate-bounce" />
-        </div>
+        </Link>
       </div>
     </ScrollSection>
   );

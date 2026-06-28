@@ -1,50 +1,43 @@
 "use client";
 
-import { type MouseEvent } from "react";
-import { useScrollProgress } from "@/hooks/use-scroll-progress";
-import { loadSections } from "@/lib/content/load";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { getActiveSection, getSectionHref } from "@/lib/section-routes";
 import { siteConfig } from "@/lib/site";
+import type { Section } from "@/lib/content/schema";
 
-export function Nav() {
-  const sections = loadSections();
-  const { activeSectionId, scrollTo } = useScrollProgress();
-  const active = activeSectionId || sections[0]?.id || "";
-
-  const handleNavigate = (event: MouseEvent<HTMLAnchorElement>, id: string) => {
-    event.preventDefault();
-    scrollTo(`#${id}`);
-    window.history.replaceState(null, "", `#${id}`);
-  };
+export function Nav({ sections }: { sections: Section[] }) {
+  const pathname = usePathname();
+  const active = getActiveSection(pathname, sections)?.id ?? sections[0]?.id ?? "";
 
   return (
     <header
       className="fixed inset-x-0 top-0 z-(--z-header) backdrop-blur-md"
       style={{ zIndex: "var(--z-header)" }}
     >
-      <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4 md:px-12">
-        <a
-          href="#hero"
-          onClick={(event) => handleNavigate(event, "hero")}
+      <nav className="mx-auto flex max-w-6xl flex-col gap-3 px-6 py-4 md:flex-row md:items-center md:justify-between md:px-12">
+        <Link
+          href="/"
           className="font-display text-lg font-bold tracking-tight"
+          aria-label="Home"
         >
           {siteConfig.initials}
-        </a>
-        <ul className="hidden gap-6 md:flex">
+        </Link>
+        <ul className="flex w-full gap-4 overflow-x-auto pb-1 md:w-auto md:gap-6 md:overflow-visible md:pb-0">
           {sections
             .filter((section) => section.kind !== "hero")
             .map((section) => (
               <li key={section.id}>
-                <a
-                  href={`#${section.id}`}
-                  onClick={(event) => handleNavigate(event, section.id)}
-                  className={`font-mono text-xs uppercase tracking-widest transition-colors ${
+                <Link
+                  href={getSectionHref(section.id)}
+                  className={`whitespace-nowrap font-mono text-xs uppercase tracking-widest transition-colors ${
                     active === section.id
                       ? "text-accent"
                       : "text-muted hover:text-foreground"
                   }`}
                 >
                   {section.id}
-                </a>
+                </Link>
               </li>
             ))}
         </ul>

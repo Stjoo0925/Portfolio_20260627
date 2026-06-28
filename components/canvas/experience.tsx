@@ -8,9 +8,11 @@ import type { Section } from "@/lib/content/schema";
 
 export function Experience({
   sections,
+  activeSectionId,
   frameloop = "always",
 }: {
   sections: Section[];
+  activeSectionId: string;
   frameloop?: "always" | "demand" | "never";
 }) {
   return (
@@ -24,8 +26,8 @@ export function Experience({
       <pointLight position={[0, 0, 2]} intensity={3} color={theme.color.accent} />
       <directionalLight position={[5, 5, 5]} intensity={1} />
       <pointLight position={[-3, -2, -4]} intensity={1} color={theme.color.gold} />
-      <ConstellationScene sections={sections} />
-      <CameraRig sections={sections} />
+      <ConstellationScene sections={sections} activeSectionId={activeSectionId} />
+      <CameraRig sections={sections} activeSectionId={activeSectionId} />
     </Canvas>
   );
 }

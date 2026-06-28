@@ -1,8 +1,8 @@
 import { SectionRouter } from "@/components/sections/section-router";
 import { loadSections } from "@/lib/content/load";
 
-export default function Home() {
-  const section = loadSections().find((item) => item.id === "hero");
+export default function ProjectsPage() {
+  const section = loadSections().find((item) => item.id === "projects");
 
   return section ? <SectionRouter section={section} /> : null;
 }

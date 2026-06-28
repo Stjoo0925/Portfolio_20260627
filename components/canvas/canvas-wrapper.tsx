@@ -11,7 +11,13 @@ const Experience = dynamic(
   { ssr: false },
 );
 
-export function CanvasWrapper({ sections }: { sections: Section[] }) {
+export function CanvasWrapper({
+  sections,
+  activeSectionId,
+}: {
+  sections: Section[];
+  activeSectionId: string;
+}) {
   const prefersReducedMotion = usePrefersReducedMotion();
   const { isOpen: isDetailPanelOpen } = useDetailPanel();
 
@@ -30,6 +36,7 @@ export function CanvasWrapper({ sections }: { sections: Section[] }) {
       <Suspense fallback={null}>
         <Experience
           sections={sections}
+          activeSectionId={activeSectionId}
           frameloop={isDetailPanelOpen ? "never" : "always"}
         />
       </Suspense>

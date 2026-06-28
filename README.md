@@ -2,12 +2,13 @@
 
 사용자와 소통하며 비즈니스 문제를 해결하는 개발자 **SoonTae Joo**의 개인 포트폴리오 웹사이트입니다.
 
-3D 별자리 배경, 부드러운 스크롤, 섹션별 인터랙션을 결합한 싱글 페이지 포트폴리오이며, 콘텐츠는 JSON 파일로 관리합니다.
+3D 별자리 배경, 섹션별 라우팅, 부드러운 전환을 결합한 포트폴리오이며, 콘텐츠는 JSON 파일로 관리합니다.
 
 ## 주요 기능
 
-- **3D 별자리 배경** — React Three Fiber 기반 캔버스가 스크롤에 따라 카메라가 이동하며 섹션 노드를 따라갑니다
-- **부드러운 스크롤** — Lenis + 스냅 포인트로 섹션 단위 탐색
+- **3D 별자리 배경** — React Three Fiber 기반 캔버스가 현재 라우트에 맞춰 섹션 노드를 따라갑니다
+- **섹션별 라우팅** — `/about`, `/skills`, `/experience`, `/projects`, `/lab`, `/contact`로 직접 접근
+- **부드러운 전환** — 공통 레이아웃 안에서 페이지 전환과 WebGL 카메라 이동을 함께 처리
 - **콘텐츠 주도 구조** — `content/` JSON 파일을 Zod 스키마로 검증해 렌더링
 - **7개 섹션** — Hero, About, Skills, Experience, Projects, Lab, Contact
 - **상세 패널** — Projects / Lab 항목 클릭 시 슬라이드 패널로 상세 내용 표시
@@ -62,7 +63,7 @@ npm run lint
 ## 프로젝트 구조
 
 ```
-├── app/                    # Next.js App Router (layout, page, 아이콘)
+├── app/                    # Next.js App Router (layout, section routes, icons)
 ├── components/
 │   ├── canvas/             # 3D 캔버스 (별자리 씬, 카메라 리그)
 │   ├── motion/             # Framer Motion 래퍼 (fade-in, stagger 등)
@@ -108,7 +109,7 @@ npm run lint
 
 ### 섹션 순서 변경
 
-`content/sections.json`에서 섹션 배열 순서와 `node` 3D 좌표를 조정합니다. `id`는 HTML 앵커(`#about`, `#projects` 등)로 사용됩니다.
+`content/sections.json`에서 섹션 배열 순서와 `node` 3D 좌표를 조정합니다. `id`는 라우트(`/about`, `/projects` 등)와 WebGL 진행 노드에 사용됩니다.
 
 ## 스크립트
 
