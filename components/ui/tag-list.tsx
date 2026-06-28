@@ -8,18 +8,21 @@ type TagListProps = {
   className?: string;
   itemClassName?: string;
   overflowClassName?: string;
+  renderTag?: (tag: string) => React.ReactNode;
 };
+
+const defaultTagClass =
+  "rounded-full border border-accent/15 bg-accent-soft/60 px-2.5 py-0.5 text-xs text-accent";
 
 /**
  * 태그를 한 줄에 맞춰 렌더링하고, 넘치는 태그는 `+n` 칩으로 합산한다.
- * 보이는 목록과 별개로 동일 폭의 보이지 않는 측정용 목록을 두어
- * 실제 줄바꿈 여부를 측정한 뒤 노출 개수를 결정한다.
  */
 export function TagList({
   tags,
   className,
-  itemClassName,
+  itemClassName = defaultTagClass,
   overflowClassName,
+  renderTag,
 }: TagListProps) {
   const listRef = useRef<HTMLUListElement>(null);
   const probeRef = useRef<HTMLUListElement>(null);
@@ -59,7 +62,7 @@ export function TagList({
       return;
     }
 
-    const gap = 8; // gap-2
+    const gap = 8;
     const chipWidth = chip?.offsetWidth ?? 0;
     const available = width;
 
@@ -79,14 +82,21 @@ export function TagList({
 
     setVisible(count);
     setOverflow(tags.length - count);
-  }, [tags, width]);
+  }, [tags, width, itemClassName, renderTag]);
+
+  const renderItem = (tag: string) =>
+    renderTag ? (
+      renderTag(tag)
+    ) : (
+      <span className={itemClassName}>{tag}</span>
+    );
 
   return (
     <>
       <ul ref={listRef} className={cn("flex flex-wrap gap-2", className)}>
         {tags.slice(0, visible).map((t) => (
-          <li key={t} data-tag className={itemClassName}>
-            {t}
+          <li key={t} data-tag>
+            {renderItem(t)}
           </li>
         ))}
         {overflow > 0 && (
@@ -104,8 +114,8 @@ export function TagList({
         style={{ width }}
       >
         {tags.map((t) => (
-          <li key={t} data-tag className={itemClassName}>
-            {t}
+          <li key={t} data-tag>
+            {renderItem(t)}
           </li>
         ))}
         <li data-chip className={overflowClassName}>

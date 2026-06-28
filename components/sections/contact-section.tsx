@@ -1,6 +1,7 @@
 import { FadeIn } from "@/components/motion/fade-in";
 import { Icon } from "@/components/ui/icon";
 import { ScrollSection } from "@/components/ui/scroll-section";
+import { SectionHeader } from "@/components/ui/section-header";
 import { loadContact } from "@/lib/content/load";
 
 export function ContactSection() {
@@ -9,70 +10,56 @@ export function ContactSection() {
   return (
     <ScrollSection id="contact">
       <FadeIn className="max-w-2xl">
-        <p className="text-gold mb-4 font-mono text-xs uppercase tracking-[0.3em]">
-          {contact.label}
-        </p>
-        <h2 className="font-display text-4xl font-bold md:text-6xl">
-          {contact.title}
-        </h2>
-        <p className="text-muted mt-6 text-lg">{contact.body}</p>
+        <SectionHeader title={contact.title} lede={contact.body} />
 
-        <dl className="mt-8 space-y-4">
-          <div>
-            <dt className="text-muted font-mono text-xs uppercase tracking-widest">
-              Email
-            </dt>
-            <dd className="mt-1">
-              <a
-                href={`mailto:${contact.email}`}
-                className="text-accent star-glow transition-opacity hover:opacity-80"
-              >
-                {contact.email}
-              </a>
-            </dd>
-          </div>
-          <div>
-            <dt className="text-muted font-mono text-xs uppercase tracking-widest">
-              Location
-            </dt>
-            <dd className="mt-1 text-foreground/90">{contact.location}</dd>
-          </div>
-        </dl>
-
-        <div className="mt-10">
-          <p className="text-muted mb-4 font-mono text-xs uppercase tracking-widest">
-            Social
-          </p>
-          <div className="flex gap-6">
-            {contact.channels
-              .filter((c) => c.href)
-              .map((c) => (
+        <div className="terminal-panel scanlines mt-10 p-6 md:p-8">
+          <dl className="space-y-6">
+            <div>
+              <dt className="text-muted font-mono text-xs uppercase tracking-widest">
+                Email
+              </dt>
+              <dd className="mt-2">
                 <a
-                  key={c.name}
-                  href={c.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-muted transition-colors hover:text-accent"
-                  aria-label={c.name}
+                  href={`mailto:${contact.email}`}
+                  className="text-accent star-glow font-mono text-sm transition-opacity hover:opacity-80"
                 >
-                  <Icon name={c.icon} size={22} />
+                  {contact.email}
                 </a>
-              ))}
-            {contact.channels.every((c) => !c.href) && (
-              <div className="flex gap-6 opacity-50">
-                {contact.channels.map((c) => (
-                  <span
-                    key={c.name}
-                    className="text-muted"
-                    title={`${c.name} (URL 미설정)`}
-                    aria-label={c.name}
-                  >
-                    <Icon name={c.icon} size={22} />
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
+              </dd>
+            </div>
+            <div>
+              <dt className="text-muted font-mono text-xs uppercase tracking-widest">
+                Location
+              </dt>
+              <dd className="text-foreground/90 mt-2 font-mono text-sm">
+                {contact.location}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-muted font-mono text-xs uppercase tracking-widest">
+                Social
+              </dt>
+              <dd className="mt-3">
+                <div className="flex flex-wrap gap-6">
+                  {contact.channels
+                    .filter((c) => c.href)
+                    .map((c) => (
+                      <a
+                        key={c.name}
+                        href={c.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-muted flex items-center gap-2 font-mono text-xs uppercase tracking-widest transition-colors hover:text-accent"
+                        aria-label={c.name}
+                      >
+                        <Icon name={c.icon} size={18} />
+                        {c.name}
+                      </a>
+                    ))}
+                </div>
+              </dd>
+            </div>
+          </dl>
         </div>
       </FadeIn>
     </ScrollSection>

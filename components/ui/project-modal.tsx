@@ -3,6 +3,7 @@
 import { Icon } from "@/components/ui/icon";
 import { DetailPanelShell } from "@/components/ui/detail-panel-shell";
 import { RetrospectiveBlock } from "@/components/ui/retrospective-block";
+import { TagChip } from "@/components/ui/tag-chip";
 import type { Project } from "@/lib/content/schema";
 
 export function ProjectDetailPanel({
@@ -23,11 +24,7 @@ export function ProjectDetailPanel({
       badge={badge}
       onClose={onClose}
     >
-      <h2 className="font-display text-4xl font-bold md:text-5xl">
-        {project.title}
-      </h2>
-
-      <p className="text-muted mt-3 font-mono text-xs">
+      <p className="text-muted font-mono text-xs">
         {project.period.start} — {project.period.end}
         {project.period.duration ? ` (${project.period.duration})` : ""}
         {" · "}
@@ -45,11 +42,8 @@ export function ProjectDetailPanel({
 
       <ul className="mt-8 flex flex-wrap gap-2">
         {project.tags.map((tag) => (
-          <li
-            key={tag}
-            className="rounded-full border border-accent/15 bg-accent-soft/60 px-2.5 py-0.5 text-xs text-accent"
-          >
-            {tag}
+          <li key={tag}>
+            <TagChip>{tag}</TagChip>
           </li>
         ))}
       </ul>

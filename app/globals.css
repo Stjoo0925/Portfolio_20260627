@@ -21,6 +21,8 @@
   --accent-glow: rgba(95, 212, 255, 0.55);
   --gold: #f4c25f;
   --gold-soft: rgba(244, 194, 95, 0.16);
+  --section-accent: #5fd4ff;
+  --section-accent-soft: rgba(95, 212, 255, 0.16);
 
   /* Typography */
   --font-sans: var(--font-noto-sans-kr);
@@ -32,7 +34,11 @@
   --ease-in-out-cubic: cubic-bezier(0.65, 0, 0.35, 1);
   --ease-float: cubic-bezier(0.45, 0, 0.55, 1);
 
-  /* Duration */
+  /* Typography scale */
+  --text-display-xl: clamp(3.5rem, 8vw, 6rem);
+  --text-display-2xl: clamp(4rem, 10vw, 8rem);
+  --leading-display: 1.02;
+  --leading-prose: 1.75;
   --duration-fast: 150ms;
   --duration-normal: 300ms;
   --duration-slow: 600ms;
@@ -57,6 +63,8 @@
   --font-sans: var(--font-noto-sans-kr);
   --font-display: var(--font-playfair-display);
   --font-mono: var(--font-geist-mono);
+  --text-display-lg: var(--text-display-xl);
+  --text-display-xl: var(--text-display-2xl);
 }
 
 /* Force dark — space mood is always dark */
@@ -130,6 +138,45 @@ body {
 /* Star glow utility */
 .star-glow {
   text-shadow: 0 0 24px var(--accent-glow);
+}
+
+.text-display-lg {
+  font-size: var(--text-display-xl);
+  line-height: var(--leading-display);
+}
+
+.text-display-xl {
+  font-size: var(--text-display-2xl);
+  line-height: var(--leading-display);
+}
+
+.text-prose {
+  line-height: var(--leading-prose);
+}
+
+.prose-columns {
+  column-gap: 2.5rem;
+}
+
+@media (min-width: 768px) {
+  .prose-columns {
+    columns: 2;
+  }
+}
+
+.terminal-panel {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  background: rgba(10, 14, 24, 0.72);
+  backdrop-filter: blur(12px);
+}
+
+.terminal-line {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.8125rem;
+  letter-spacing: 0.04em;
 }
 
 .accent-glow {

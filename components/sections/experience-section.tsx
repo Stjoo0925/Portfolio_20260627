@@ -1,6 +1,8 @@
 import { FadeIn } from "@/components/motion/fade-in";
 import { Stagger, StaggerItem } from "@/components/motion/stagger";
 import { ScrollSection } from "@/components/ui/scroll-section";
+import { SectionHeader } from "@/components/ui/section-header";
+import { ElevatedCard } from "@/components/ui/elevated-card";
 import { loadExperience } from "@/lib/content/load";
 
 function ExperienceColumn({
@@ -11,11 +13,15 @@ function ExperienceColumn({
   children: React.ReactNode;
 }) {
   return (
-    <StaggerItem className="flex flex-col rounded-2xl border border-border bg-background-elevated/50 p-6 backdrop-blur-sm">
-      <h3 className="text-gold mb-5 font-mono text-xs uppercase tracking-[0.2em]">
-        {title}
-      </h3>
-      <ul className="flex flex-1 flex-col gap-5">{children}</ul>
+    <StaggerItem>
+      <ElevatedCard className="flex h-full flex-col p-6">
+        <h3 className="text-gold mb-5 font-mono text-xs uppercase tracking-[0.2em]">
+          {title}
+        </h3>
+        <ul className="relative flex flex-1 flex-col gap-5 before:absolute before:top-2 before:bottom-2 before:left-[3px] before:w-px before:bg-accent/15">
+          {children}
+        </ul>
+      </ElevatedCard>
     </StaggerItem>
   );
 }
@@ -32,12 +38,18 @@ function ExperienceItem({
   extra?: string;
 }) {
   return (
-    <li className="relative border-l border-accent/25 pl-4">
-      <span className="accent-glow absolute top-1.5 left-[-5px] h-2 w-2 rounded-full bg-accent" />
+    <li className="relative pl-5">
+      <span className="accent-glow absolute top-1.5 left-0 h-2 w-2 rounded-full bg-accent" />
       <h4 className="font-display text-base leading-snug">{title}</h4>
-      {period && <p className="text-muted mt-1 font-mono text-xs">{period}</p>}
+      {period && (
+        <p className="text-muted mt-1 font-mono text-xs tracking-wide">
+          {period}
+        </p>
+      )}
       {subtitle && (
-        <p className="text-foreground/80 mt-1 text-sm">{subtitle}</p>
+        <p className="text-foreground/80 mt-1 text-sm leading-relaxed">
+          {subtitle}
+        </p>
       )}
       {extra && <p className="text-accent mt-1 text-sm">{extra}</p>}
     </li>
@@ -50,12 +62,7 @@ export function ExperienceSection() {
   return (
     <ScrollSection id="experience">
       <FadeIn className="w-full max-w-6xl">
-        <p className="text-gold mb-4 font-mono text-xs uppercase tracking-[0.3em]">
-          {exp.label}
-        </p>
-        <h2 className="font-display text-4xl font-bold md:text-6xl">
-          {exp.title}
-        </h2>
+        <SectionHeader title={exp.title} />
 
         <Stagger className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           <ExperienceColumn title="Career">

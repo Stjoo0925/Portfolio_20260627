@@ -2,6 +2,7 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
+import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { CanvasWrapper } from "@/components/canvas/canvas-wrapper";
 import { Nav } from "@/components/ui/nav";
@@ -10,7 +11,9 @@ import {
   getActiveSection,
   getSectionHref,
   getSectionNeighbors,
+  getSectionVisualPreset,
 } from "@/lib/section-routes";
+import { cn } from "@/lib/utils";
 import type { Section } from "@/lib/content/schema";
 
 export function PortfolioShell({
@@ -23,12 +26,21 @@ export function PortfolioShell({
   const pathname = usePathname();
   const prefersReducedMotion = usePrefersReducedMotion();
   const activeSection = getActiveSection(pathname, sections);
+  const preset = getSectionVisualPreset(activeSection.id);
   const { previous, next } = getSectionNeighbors(activeSection.id, sections);
+
+  useEffect(() => {
+    document.documentElement.style.setProperty("--section-accent", preset.primary);
+    document.documentElement.style.setProperty(
+      "--section-accent-soft",
+      `${preset.primary}29`,
+    );
+  }, [preset.primary]);
 
   return (
     <>
       <CanvasWrapper sections={sections} activeSectionId={activeSection.id} />
-      <Nav sections={sections} />
+      <Nav sections={sections} activeSectionId={activeSection.id} />
 
       <AnimatePresence mode="wait" initial={false}>
         <motion.main
@@ -44,16 +56,15 @@ export function PortfolioShell({
         </motion.main>
       </AnimatePresence>
 
-      <div
-        className="pointer-events-none fixed right-6 bottom-6 left-6 hidden items-end justify-between gap-4 md:flex"
-        style={{ zIndex: "var(--z-header)" }}
-      >
-        <RouteStepLink direction="previous" section={previous} />
-        <div className="rounded-full border border-accent/15 bg-background/45 px-4 py-2 font-mono text-[10px] tracking-[0.28em] text-muted uppercase backdrop-blur-md">
-          {activeSection.id}
+      {(previous || next) && (
+        <div
+          className="pointer-events-none fixed right-6 bottom-6 left-6 hidden items-end justify-between gap-4 md:flex"
+          style={{ zIndex: "var(--z-header)" }}
+        >
+          <RouteStepLink direction="previous" section={previous} />
+          <RouteStepLink direction="next" section={next} align="end" />
         </div>
-        <RouteStepLink direction="next" section={next} />
-      </div>
+      )}
     </>
   );
 }
@@ -61,16 +72,23 @@ export function PortfolioShell({
 function RouteStepLink({
   direction,
   section,
+  align,
 }: {
   direction: "previous" | "next";
   section: Section | null;
+  align?: "start" | "end";
 }) {
-  if (!section) return <span className="w-28" />;
+  if (!section) {
+    return <span className={cn("w-28", align === "end" && "ml-auto")} />;
+  }
 
   return (
     <Link
       href={getSectionHref(section.id)}
-      className="pointer-events-auto w-28 rounded-full border border-accent/15 bg-background/45 px-4 py-2 font-mono text-[10px] tracking-[0.22em] text-muted uppercase backdrop-blur-md transition-colors hover:border-accent/40 hover:text-accent"
+      className={cn(
+        "pointer-events-auto w-28 rounded-full border border-border bg-background/45 px-4 py-2 font-mono text-[10px] tracking-[0.22em] text-muted uppercase backdrop-blur-md transition-colors hover:border-accent/40 hover:text-accent",
+        align === "end" && "ml-auto",
+      )}
     >
       {direction === "previous" ? "Prev" : "Next"} / {section.id}
     </Link>

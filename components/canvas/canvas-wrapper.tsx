@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
 import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
 import { useDetailPanel } from "@/providers/detail-panel-provider";
 import type { Section } from "@/lib/content/schema";
@@ -21,6 +21,12 @@ export function CanvasWrapper({
   const prefersReducedMotion = usePrefersReducedMotion();
   const { isOpen: isDetailPanelOpen } = useDetailPanel();
 
+  useEffect(() => {
+    window.dispatchEvent(
+      new CustomEvent("canvas:wake", { detail: { sectionId: activeSectionId } }),
+    );
+  }, [activeSectionId]);
+
   if (prefersReducedMotion) {
     return null;
   }
@@ -37,7 +43,7 @@ export function CanvasWrapper({
         <Experience
           sections={sections}
           activeSectionId={activeSectionId}
-          frameloop={isDetailPanelOpen ? "never" : "always"}
+          frameloop={isDetailPanelOpen ? "never" : "demand"}
         />
       </Suspense>
     </div>

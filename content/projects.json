@@ -1,6 +1,6 @@
 {
-  "label": "04 — Projects",
   "title": "Projects",
+  "intro": "팀과 함께한 프로젝트들입니다. 기획·리드·LLM 연동까지 다양한 역할로 성장했습니다.",
   "projects": [
     {
       "id": "narrativa",
@@ -22,10 +22,10 @@
       "links": { "github": "", "demo": "", "detail": "" },
       "featured": true,
       "retrospective": {
-        "overview": "",
-        "learnings": [],
-        "challenges": [],
-        "nextSteps": ""
+        "overview": "LLM 기반 분기형 스토리텔링을 팀 프로젝트로 처음 설계·리드했습니다. FE/BE/LLM 역할 분담과 일정 관리가 핵심 과제였습니다.",
+        "learnings": ["LLM 응답 지연에 맞춘 UX 설계", "팀 간 API 계약 우선 정의"],
+        "challenges": ["분기 스토리 상태 관리 복잡도", "6주 일정 내 MVP 범위 조율"],
+        "nextSteps": "회고 및 데모 링크 보강 예정"
       }
     },
     {
@@ -47,10 +47,10 @@
       "tags": ["Vue", "Pinia", "Spring", "MySQL", "Docker", "Jenkins", "Vercel"],
       "links": { "github": "", "demo": "", "detail": "" },
       "retrospective": {
-        "overview": "",
-        "learnings": [],
-        "challenges": [],
-        "nextSteps": ""
+        "overview": "첫 팀 리드 경험으로 Git Flow와 코드 리뷰 문화를 정립했습니다.",
+        "learnings": ["Vue + Spring 분리 배포 파이프라인", "피드 UX와 이미지 업로드 처리"],
+        "challenges": ["초기 요구사항 범위 creep", "Jenkins 파이프라인 설정"],
+        "nextSteps": "GitHub 저장소 공개 검토"
       }
     },
     {
@@ -72,10 +72,10 @@
       "tags": ["React", "TailwindCSS", "Mail.js", "Supabase", "Netlify"],
       "links": { "github": "", "demo": "", "detail": "" },
       "retrospective": {
-        "overview": "",
-        "learnings": [],
-        "challenges": [],
-        "nextSteps": ""
+        "overview": "교육생 대상 B2B 성격의 플랫폼을 기획부터 개발까지 진행 중입니다.",
+        "learnings": ["Supabase 기반 빠른 백엔드 구성", "FE/BE/APP 3트랙 병렬 조율"],
+        "challenges": ["다 플랫폼(웹+앱) 일정 동기화"],
+        "nextSteps": "MVP 출시 및 사용자 피드백 반영"
       }
     }
   ]

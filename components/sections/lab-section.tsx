@@ -5,10 +5,21 @@ import { FadeIn } from "@/components/motion/fade-in";
 import { Stagger, StaggerItem } from "@/components/motion/stagger";
 import { LabDetailPanel } from "@/components/ui/lab-detail-panel";
 import { ScrollSection } from "@/components/ui/scroll-section";
-import { TagList } from "@/components/ui/tag-list";
+import { SectionHeader } from "@/components/ui/section-header";
+import { WorkCard } from "@/components/ui/work-card";
 import { loadLab } from "@/lib/content/load";
 import type { LabProject } from "@/lib/content/schema";
-import { cn } from "@/lib/utils";
+
+function hasRetrospective(project: LabProject) {
+  const r = project.retrospective;
+  if (!r) return false;
+  return Boolean(
+    r.overview ||
+      (r.learnings && r.learnings.length > 0) ||
+      (r.challenges && r.challenges.length > 0) ||
+      r.nextSteps,
+  );
+}
 
 export function LabSection() {
   const data = loadLab();
@@ -18,53 +29,37 @@ export function LabSection() {
     <>
       <ScrollSection id="lab" align="start">
         <FadeIn className="max-w-4xl">
-          <p className="text-gold mb-4 font-mono text-xs uppercase tracking-[0.3em]">
-            {data.label}
-          </p>
-          <h2 className="font-display text-4xl font-bold md:text-6xl">
-            {data.title}
-          </h2>
-          <p className="text-muted mt-4 max-w-xl">{data.intro}</p>
+          <SectionHeader title={data.title} lede={data.intro} />
 
           <Stagger className="mt-10 grid gap-6 md:grid-cols-2">
             {data.projects.map((p) => (
               <StaggerItem key={p.id}>
-                <button
-                  type="button"
+                <WorkCard
+                  type={p.type}
+                  title={p.title}
+                  summary={p.summary}
+                  tags={p.tags}
+                  selected={selected?.id === p.id}
                   onClick={() =>
                     setSelected((prev) => (prev?.id === p.id ? null : p))
                   }
-                  className={cn(
-                    "group flex w-full flex-col rounded-2xl border bg-background-elevated/60 p-6 text-left backdrop-blur-sm transition-[border-color,box-shadow]",
-                    selected?.id === p.id
-                      ? "border-accent/60 accent-glow"
-                      : "border-border hover:border-accent/40",
-                  )}
-                >
-                  <div className="flex items-baseline justify-between gap-2">
-                    <span className="text-muted font-mono text-xs uppercase">
-                      {p.type}
-                    </span>
-                    {p.version && (
+                  badge={
+                    p.version ? (
                       <span className="text-accent font-mono text-xs">
                         v{p.version}
                       </span>
-                    )}
-                  </div>
-                  <h3 className="font-display mt-2 text-2xl">{p.title}</h3>
-                  <p className="text-muted mt-3 flex-1 text-sm">{p.summary}</p>
-
-                  <TagList
-                    tags={p.tags}
-                    className="mt-4"
-                    itemClassName="rounded-full border border-accent/15 bg-accent-soft/60 px-2.5 py-0.5 text-xs text-accent"
-                    overflowClassName="text-muted px-1 text-xs"
-                  />
-
-                  <span className="text-accent mt-4 text-sm opacity-0 transition-opacity group-hover:opacity-100">
-                    {selected?.id === p.id ? "닫기 ✕" : "상세 보기 →"}
-                  </span>
-                </button>
+                    ) : undefined
+                  }
+                  signal={
+                    hasRetrospective(p) ? (
+                      <span
+                        className="h-2 w-2 rounded-full bg-accent accent-glow"
+                        title="회고 작성됨"
+                        aria-label="회고 작성됨"
+                      />
+                    ) : undefined
+                  }
+                />
               </StaggerItem>
             ))}
           </Stagger>

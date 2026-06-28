@@ -2,13 +2,27 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { getActiveSection, getSectionHref } from "@/lib/section-routes";
+import {
+  getActiveSection,
+  getSectionHref,
+  getSectionVisualPreset,
+} from "@/lib/section-routes";
 import { siteConfig } from "@/lib/site";
 import type { Section } from "@/lib/content/schema";
 
-export function Nav({ sections }: { sections: Section[] }) {
+export function Nav({
+  sections,
+  activeSectionId,
+}: {
+  sections: Section[];
+  activeSectionId?: string;
+}) {
   const pathname = usePathname();
-  const active = getActiveSection(pathname, sections)?.id ?? sections[0]?.id ?? "";
+  const active =
+    activeSectionId ??
+    getActiveSection(pathname, sections)?.id ??
+    sections[0]?.id ??
+    "";
 
   return (
     <header
@@ -26,20 +40,24 @@ export function Nav({ sections }: { sections: Section[] }) {
         <ul className="flex w-full gap-4 overflow-x-auto pb-1 md:w-auto md:gap-6 md:overflow-visible md:pb-0">
           {sections
             .filter((section) => section.kind !== "hero")
-            .map((section) => (
-              <li key={section.id}>
-                <Link
-                  href={getSectionHref(section.id)}
-                  className={`whitespace-nowrap font-mono text-xs uppercase tracking-widest transition-colors ${
-                    active === section.id
-                      ? "text-accent"
-                      : "text-muted hover:text-foreground"
-                  }`}
-                >
-                  {section.id}
-                </Link>
-              </li>
-            ))}
+            .map((section) => {
+              const isActive = active === section.id;
+              const preset = getSectionVisualPreset(section.id);
+
+              return (
+                <li key={section.id}>
+                  <Link
+                    href={getSectionHref(section.id)}
+                    className={`whitespace-nowrap font-mono text-xs uppercase tracking-widest transition-colors ${
+                      isActive ? "" : "text-muted hover:text-foreground"
+                    }`}
+                    style={isActive ? { color: preset.primary } : undefined}
+                  >
+                    {section.id}
+                  </Link>
+                </li>
+              );
+            })}
         </ul>
       </nav>
     </header>

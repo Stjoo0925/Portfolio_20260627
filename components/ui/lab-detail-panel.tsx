@@ -3,6 +3,7 @@
 import { Icon } from "@/components/ui/icon";
 import { DetailPanelShell } from "@/components/ui/detail-panel-shell";
 import { RetrospectiveBlock } from "@/components/ui/retrospective-block";
+import { TagChip } from "@/components/ui/tag-chip";
 import type { LabProject } from "@/lib/content/schema";
 
 export function LabDetailPanel({
@@ -23,11 +24,7 @@ export function LabDetailPanel({
       badge={badge}
       onClose={onClose}
     >
-      <h2 className="font-display text-4xl font-bold md:text-5xl">
-        {project.title}
-      </h2>
-
-      <p className="mt-6 text-lg text-foreground/90">{project.description}</p>
+      <p className="text-lg text-foreground/90">{project.description}</p>
 
       <div className="mt-8">
         <h3 className="text-gold font-mono text-xs uppercase tracking-widest">
@@ -48,11 +45,8 @@ export function LabDetailPanel({
 
       <ul className="mt-8 flex flex-wrap gap-2">
         {project.tags.map((tag) => (
-          <li
-            key={tag}
-            className="rounded-full border border-accent/15 bg-accent-soft/60 px-2.5 py-0.5 text-xs text-accent"
-          >
-            {tag}
+          <li key={tag}>
+            <TagChip>{tag}</TagChip>
           </li>
         ))}
       </ul>

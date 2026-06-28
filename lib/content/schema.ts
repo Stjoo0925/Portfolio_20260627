@@ -33,25 +33,18 @@ export const sectionsSchema = z.object({
   sections: z.array(sectionSchema),
 });
 
-export const ctaSchema = z.object({
-  label: z.string(),
-  href: z.string(),
-});
-
 export const heroSchema = z.object({
   greeting: z.string(),
   name: z.string(),
   roles: z.array(z.string()),
   tagline: z.string(),
-  cta: z.array(ctaSchema),
 });
 
 export const aboutSchema = z.object({
-  label: z.string(),
   title: z.string(),
   intro: z.string(),
+  quote: z.string(),
   paragraphs: z.array(z.string()),
-  highlights: z.array(z.string()),
 });
 
 export const careerItemSchema = z.object({
@@ -79,7 +72,6 @@ export const certificateItemSchema = z.object({
 });
 
 export const experienceSchema = z.object({
-  label: z.string(),
   title: z.string(),
   career: z.array(careerItemSchema),
   education: z.array(educationItemSchema),
@@ -88,10 +80,13 @@ export const experienceSchema = z.object({
 });
 
 export const skillsSchema = z.object({
-  label: z.string(),
   title: z.string(),
   categories: z.array(
-    z.object({ name: z.string(), items: z.array(z.string()) }),
+    z.object({
+      name: z.string(),
+      meta: z.string().optional(),
+      items: z.array(z.string()),
+    }),
   ),
 });
 
@@ -131,8 +126,8 @@ export const projectSchema = z.object({
 });
 
 export const projectsSchema = z.object({
-  label: z.string(),
   title: z.string(),
+  intro: z.string(),
   projects: z.array(projectSchema),
 });
 
@@ -153,14 +148,12 @@ export const labProjectSchema = z.object({
 });
 
 export const labSchema = z.object({
-  label: z.string(),
   title: z.string(),
   intro: z.string(),
   projects: z.array(labProjectSchema),
 });
 
 export const contactSchema = z.object({
-  label: z.string(),
   title: z.string(),
   body: z.string(),
   email: z.string(),
@@ -187,4 +180,3 @@ export type Projects = z.infer<typeof projectsSchema>;
 export type LabProject = z.infer<typeof labProjectSchema>;
 export type Lab = z.infer<typeof labSchema>;
 export type Contact = z.infer<typeof contactSchema>;
-export type Cta = z.infer<typeof ctaSchema>;

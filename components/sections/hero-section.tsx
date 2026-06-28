@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { TextReveal } from "@/components/motion/text-reveal";
 import { ScrollSection } from "@/components/ui/scroll-section";
 import { RoleCycle } from "@/components/ui/role-cycle";
 import { Icon } from "@/components/ui/icon";
@@ -9,29 +10,22 @@ export function HeroSection() {
 
   return (
     <ScrollSection id="hero">
-      <div className="max-w-3xl">
-        <p className="text-accent mb-6 font-mono text-xs uppercase tracking-[0.3em]">
+      <div className="max-w-4xl">
+        <p className="text-accent mb-4 font-mono text-xs uppercase tracking-[0.3em]">
           {hero.greeting}
         </p>
-        <h1 className="font-display text-6xl leading-[1.02] font-bold md:text-8xl">
-          {hero.name}
+
+        <h1 className="font-display text-display-xl font-bold">
+          <TextReveal text={hero.name} />
         </h1>
+
         <p className="mt-4 font-display text-2xl italic md:text-3xl">
           <RoleCycle roles={hero.roles} />
         </p>
-        <p className="text-muted mt-8 max-w-xl text-lg">{hero.tagline}</p>
 
-        <div className="mt-10 flex flex-wrap gap-4">
-          {hero.cta.map((c) => (
-            <Link
-              key={c.label}
-              href={c.href}
-              className="accent-glow flex items-center gap-2 rounded-full border border-accent/30 bg-accent-soft px-6 py-3 text-sm font-medium transition-colors hover:bg-accent/20"
-            >
-              {c.label}
-            </Link>
-          ))}
-        </div>
+        <p className="text-muted mt-8 max-w-xl text-lg text-prose">
+          {hero.tagline}
+        </p>
 
         <Link
           href="/about"
