@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Badge } from "@astryxdesign/core/Badge";
 import { FadeIn } from "@/components/motion/fade-in";
 import { Stagger, StaggerItem } from "@/components/motion/stagger";
 import { ProjectDetailPanel } from "@/components/ui/project-modal";
@@ -19,12 +20,12 @@ export function ProjectsSection() {
   return (
     <>
       <ScrollSection id="projects" align="start">
-        <FadeIn className="w-full max-w-6xl">
+        <FadeIn className="route-section-frame">
           <SectionHeader title={data.title} lede={data.intro} />
 
-          <Stagger className={cn(UNIFORM_BENTO_GRID_CLASS, "mt-12")}>
+          <Stagger className={cn(UNIFORM_BENTO_GRID_CLASS, "route-section-grid")}>
             {data.projects.map((p) => (
-              <StaggerItem key={p.id} className="min-h-0">
+              <StaggerItem key={p.id} className="route-bento-item">
                 <WorkCard
                   type={p.type}
                   title={p.title}
@@ -36,9 +37,11 @@ export function ProjectsSection() {
                   }
                   badge={
                     p.featured ? (
-                      <span className="text-gold font-mono text-[11px] uppercase tracking-[0.2em]">
-                        Featured
-                      </span>
+                      <Badge
+                        className="portfolio-badge"
+                        label="Featured"
+                        variant="yellow"
+                      />
                     ) : undefined
                   }
                   meta={
@@ -49,7 +52,7 @@ export function ProjectsSection() {
                   }
                   signal={
                     p.period.ongoing ? (
-                      <span className="text-accent text-xs">진행중</span>
+                      <span className="route-status">진행중</span>
                     ) : undefined
                   }
                 />

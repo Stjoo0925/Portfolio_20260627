@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Badge } from "@astryxdesign/core/Badge";
 import { FadeIn } from "@/components/motion/fade-in";
 import { Stagger, StaggerItem } from "@/components/motion/stagger";
 import { LabDetailPanel } from "@/components/ui/lab-detail-panel";
@@ -30,12 +31,12 @@ export function LabSection() {
   return (
     <>
       <ScrollSection id="lab" align="start">
-        <FadeIn className="w-full max-w-6xl">
+        <FadeIn className="route-section-frame">
           <SectionHeader title={data.title} lede={data.intro} />
 
-          <Stagger className={cn(UNIFORM_BENTO_GRID_CLASS, "mt-12")}>
+          <Stagger className={cn(UNIFORM_BENTO_GRID_CLASS, "route-section-grid")}>
             {data.projects.map((p) => (
-              <StaggerItem key={p.id} className="min-h-0">
+              <StaggerItem key={p.id} className="route-bento-item">
                 <WorkCard
                   type={p.type}
                   title={p.title}
@@ -47,15 +48,17 @@ export function LabSection() {
                   }
                   badge={
                     p.version ? (
-                      <span className="text-accent font-mono text-[11px] uppercase tracking-[0.2em]">
-                        v{p.version}
-                      </span>
+                      <Badge
+                        className="portfolio-badge"
+                        label={`v${p.version}`}
+                        variant="cyan"
+                      />
                     ) : undefined
                   }
                   signal={
                     hasRetrospective(p) ? (
                       <span
-                        className="h-2 w-2 rounded-full bg-accent shadow-[0_0_8px_rgba(95,212,255,0.5)]"
+                        className="lab-signal-dot"
                         title="회고 작성됨"
                         aria-label="회고 작성됨"
                       />

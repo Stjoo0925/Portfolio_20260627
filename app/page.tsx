@@ -1,8 +1,5 @@
-import { SectionRouter } from "@/components/sections/section-router";
-import { loadSections } from "@/lib/content/load";
+import { HeroSection } from "@/components/sections/hero-section";
 
 export default function Home() {
-  const section = loadSections().find((item) => item.id === "hero");
-
-  return section ? <SectionRouter section={section} /> : null;
+  return <HeroSection />;
 }

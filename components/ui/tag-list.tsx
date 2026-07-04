@@ -2,6 +2,7 @@
 
 import { useLayoutEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
+import type { CSSProperties } from "react";
 
 type TagListProps = {
   tags: string[];
@@ -11,8 +12,7 @@ type TagListProps = {
   renderTag?: (tag: string) => React.ReactNode;
 };
 
-const defaultTagClass =
-  "rounded-full border border-accent/15 bg-accent-soft/60 px-2.5 py-0.5 text-xs text-accent";
+const defaultTagClass = "tag-list__default-chip";
 
 /**
  * 태그를 한 줄에 맞춰 렌더링하고, 넘치는 태그는 `+n` 칩으로 합산한다.
@@ -93,7 +93,7 @@ export function TagList({
 
   return (
     <>
-      <ul ref={listRef} className={cn("flex flex-wrap gap-2", className)}>
+      <ul ref={listRef} className={cn("tag-list", className)}>
         {tags.slice(0, visible).map((t) => (
           <li key={t} data-tag>
             {renderItem(t)}
@@ -107,11 +107,8 @@ export function TagList({
       <ul
         ref={probeRef}
         aria-hidden
-        className={cn(
-          "pointer-events-none invisible absolute left-0 top-0 flex h-0 flex-wrap gap-2 overflow-hidden",
-          className,
-        )}
-        style={{ width }}
+        className={cn("tag-list tag-list--probe", className)}
+        style={{ "--tag-list-probe-width": `${width}px` } as CSSProperties}
       >
         {tags.map((t) => (
           <li key={t} data-tag>

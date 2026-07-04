@@ -3,7 +3,7 @@ export function RoleCycle({ roles }: { roles: string[] }) {
 
   return (
     <span className="relative inline-block">
-      <span className="text-accent star-glow inline-block font-display italic">
+      <span className="role-cycle-text">
         {role}
       </span>
     </span>

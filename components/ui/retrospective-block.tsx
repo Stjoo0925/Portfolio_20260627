@@ -20,15 +20,12 @@ function ListSection({
 
   return (
     <div>
-      <h4 className="text-sm font-medium text-foreground/80">{title}</h4>
-      <ul className="mt-2 space-y-2">
+      <h4 className="retrospective-subheading">{title}</h4>
+      <ul className="retrospective-list">
         {items.map((item) => (
-          <li
-            key={item}
-            className="flex gap-2 text-sm leading-relaxed text-foreground/75"
-          >
-            <span className="text-accent mt-0.5 shrink-0">·</span>
-            <span className="min-w-0 flex-1">{item}</span>
+          <li key={item}>
+            <span>·</span>
+            <span>{item}</span>
           </li>
         ))}
       </ul>
@@ -46,15 +43,15 @@ export function RetrospectiveBlock({
   const filled = hasContent(retrospective);
 
   return (
-    <div className="mt-10 rounded-2xl border border-border bg-background/40 p-6">
-      <h3 className="text-gold font-mono text-xs uppercase tracking-widest">
+    <div className="retrospective-card">
+      <h3 className="detail-heading">
         회고
       </h3>
 
       {filled ? (
-        <div className="mt-4 space-y-6">
+        <div className="retrospective-content">
           {retrospective.overview?.trim() && (
-            <p className="text-measure-wide text-sm leading-relaxed text-foreground/85">
+            <p className="retrospective-copy">
               {retrospective.overview}
             </p>
           )}
@@ -65,19 +62,19 @@ export function RetrospectiveBlock({
           />
           {retrospective.nextSteps?.trim() && (
             <div>
-              <h4 className="text-sm font-medium text-foreground/80">
+              <h4 className="retrospective-subheading">
                 다음에 개선할 점
               </h4>
-              <p className="text-measure-wide mt-2 text-sm leading-relaxed text-foreground/75">
+              <p className="retrospective-copy">
                 {retrospective.nextSteps}
               </p>
             </div>
           )}
         </div>
       ) : (
-        <p className="mt-4 text-sm leading-relaxed text-muted">
+        <p className="retrospective-empty">
           프로젝트 회고를 작성해 주세요. JSON의{" "}
-          <code className="text-accent/90">retrospective</code> 필드에 내용을
+          <code>retrospective</code> 필드에 내용을
           추가하면 여기에 표시됩니다.
         </p>
       )}

@@ -2,9 +2,16 @@ import {
   ArrowDown,
   ArrowLeft,
   ArrowRight,
+  BriefcaseBusiness,
   ExternalLink,
+  FlaskConical,
+  FolderKanban,
+  Home,
   Mail,
+  Send,
   type LucideIcon,
+  UserRound,
+  Wrench,
 } from "lucide-react";
 
 type IconProps = { size?: number; className?: string };
@@ -86,7 +93,14 @@ const registry: Record<string, IconComponent> = {
   ArrowDown,
   ArrowLeft,
   ArrowRight,
+  BriefcaseBusiness,
   ExternalLink,
+  FlaskConical,
+  FolderKanban,
+  Home,
+  Send,
+  UserRound,
+  Wrench,
 };
 
 export function Icon({

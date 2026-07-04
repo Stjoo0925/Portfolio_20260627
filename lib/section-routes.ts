@@ -7,17 +7,17 @@ export type SectionTheme = {
 };
 
 const fallbackTheme: SectionTheme = {
-  accent: "#5fd4ff",
+  accent: "var(--color-text-cyan)",
 };
 
 export const sectionThemes: Record<string, SectionTheme> = {
   hero: fallbackTheme,
-  about: { accent: "#66f2ff" },
-  skills: { accent: "#6e5bff" },
-  experience: { accent: "#ffb75f" },
-  projects: { accent: "#8eeaff" },
-  lab: { accent: "#ff4fd8" },
-  contact: { accent: "#fff2c6" },
+  about: { accent: "var(--color-text-teal)" },
+  skills: { accent: "var(--color-text-purple)" },
+  experience: { accent: "var(--color-text-yellow)" },
+  projects: { accent: "var(--color-text-blue)" },
+  lab: { accent: "var(--color-text-pink)" },
+  contact: { accent: "var(--color-text-green)" },
 };
 
 export function getSectionTheme(sectionId: string): SectionTheme {

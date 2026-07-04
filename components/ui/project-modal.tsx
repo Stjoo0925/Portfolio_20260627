@@ -24,36 +24,36 @@ export function ProjectDetailPanel({
       badge={badge}
       onClose={onClose}
     >
-      <dl className="text-muted space-y-1 font-mono text-xs leading-relaxed">
-        <div className="flex flex-wrap gap-x-2 gap-y-0.5">
+      <dl className="detail-meta-list">
+        <div>
           <dt className="sr-only">기간</dt>
           <dd>
             {project.period.start} — {project.period.end}
             {project.period.duration ? ` (${project.period.duration})` : ""}
           </dd>
         </div>
-        <div className="flex flex-wrap gap-x-2 gap-y-0.5">
+        <div>
           <dt className="sr-only">팀</dt>
-          <dd className="break-keep">
+          <dd>
             {project.team.size}명 · {project.team.composition}
           </dd>
         </div>
       </dl>
 
-      <p className="text-measure-wide mt-6 text-lg leading-relaxed text-foreground/90">
+      <p className="detail-description">
         {project.description}
       </p>
 
-      <div className="mt-8">
-        <h3 className="text-gold font-mono text-xs uppercase tracking-widest">
+      <div className="detail-section">
+        <h3 className="detail-heading">
           주요 역할
         </h3>
-        <p className="text-measure-wide mt-2 leading-relaxed text-foreground/85">
+        <p className="detail-copy">
           {project.role}
         </p>
       </div>
 
-      <ul className="mt-8 flex flex-wrap gap-2">
+      <ul className="detail-tag-list">
         {project.tags.map((tag) => (
           <li key={tag} className="max-w-full">
             <TagChip>{tag}</TagChip>
@@ -63,15 +63,15 @@ export function ProjectDetailPanel({
 
       <RetrospectiveBlock retrospective={project.retrospective ?? {}} />
 
-      <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-4">
+      <div className="detail-link-list">
         {project.links.github && (
           <a
             href={project.links.github}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex max-w-full items-start gap-1.5 text-sm leading-snug text-foreground/80 transition-colors hover:text-accent"
+            className="detail-link"
           >
-            <Icon name="Github" size={14} className="mt-0.5 shrink-0" />
+            <Icon name="Github" size={14} className="detail-link__icon" />
             <span className="text-readable-en">GitHub Repository</span>
           </a>
         )}
@@ -80,9 +80,9 @@ export function ProjectDetailPanel({
             href={project.links.demo}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex max-w-full items-start gap-1.5 text-sm leading-snug text-foreground/80 transition-colors hover:text-accent"
+            className="detail-link"
           >
-            <Icon name="ExternalLink" size={14} className="mt-0.5 shrink-0" />
+            <Icon name="ExternalLink" size={14} className="detail-link__icon" />
             <span className="text-readable-en">Demo</span>
           </a>
         )}
@@ -91,9 +91,9 @@ export function ProjectDetailPanel({
             href={project.links.detail}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex max-w-full items-start gap-1.5 text-sm leading-snug text-foreground/80 transition-colors hover:text-accent"
+            className="detail-link"
           >
-            <Icon name="ExternalLink" size={14} className="mt-0.5 shrink-0" />
+            <Icon name="ExternalLink" size={14} className="detail-link__icon" />
             <span className="text-readable-en">상세 보기</span>
           </a>
         )}

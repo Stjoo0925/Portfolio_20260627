@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import type { CSSProperties } from "react";
 
 export function ScrollSection({
   children,
@@ -21,14 +22,12 @@ export function ScrollSection({
     <section
       id={id}
       className={cn(
-        "relative flex w-full px-6 md:px-12 lg:px-16",
-        isStart
-          ? "items-start scroll-mt-28 pt-28 pb-28 md:scroll-mt-32 md:pt-32 md:pb-32"
-          : "items-center py-16 md:py-20",
+        "scroll-section",
+        isStart ? "scroll-section--start" : "scroll-section--center",
         snap ? "snap-section" : "snap-section-off",
         className,
       )}
-      style={{ minHeight: height }}
+      style={{ "--scroll-section-height": height } as CSSProperties}
     >
       {children}
     </section>

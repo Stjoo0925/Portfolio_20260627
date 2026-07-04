@@ -3,7 +3,6 @@
 import { TagList } from "@/components/ui/tag-list";
 import { TagChip } from "@/components/ui/tag-chip";
 import { ElevatedCard } from "@/components/ui/elevated-card";
-import { cn } from "@/lib/utils";
 
 type WorkCardProps = {
   type: string;
@@ -35,29 +34,29 @@ export function WorkCard({
       as="button"
       selected={selected}
       onClick={onClick}
-      className="flex h-full min-h-0 flex-col p-5 md:p-6"
+      className="work-card"
     >
-      <div className="mb-2 flex items-start justify-between gap-3">
-        <span className="text-accent/80 shrink-0 font-mono text-[11px] uppercase tracking-[0.2em]">
+      <div className="work-card__header">
+        <span className="work-card__type">
           {type}
         </span>
-        <div className="flex shrink-0 items-center gap-2">
+        <div className="work-card__badges">
           {signal}
           {badge}
         </div>
       </div>
 
-      <h3 className="font-display text-balance break-keep text-xl leading-snug text-foreground transition-colors duration-300 group-hover:text-accent md:text-2xl">
+      <h3 className="work-card__title">
         {title}
       </h3>
 
       {meta && (
-        <div className="text-muted mt-1.5 font-mono text-xs leading-relaxed break-keep">
+        <div className="work-card__meta">
           {meta}
         </div>
       )}
 
-      <p className="text-muted mt-3 flex-1 text-sm leading-relaxed break-keep">
+      <p className="work-card__summary">
         {summary}
       </p>
 
@@ -65,26 +64,19 @@ export function WorkCard({
 
       <TagList
         tags={tags}
-        className="mt-4"
+        className="work-card__tags"
         itemClassName=""
-        overflowClassName="text-muted px-1 text-xs"
+        overflowClassName="tag-list__overflow"
         renderTag={(tag) => <TagChip>{tag}</TagChip>}
       />
 
-      <div
-        className={cn(
-          "mt-4 flex items-center text-sm font-medium transition-all duration-300",
-          selected
-            ? "text-accent opacity-100"
-            : "text-muted opacity-70 group-hover:text-foreground group-hover:opacity-100",
-        )}
-      >
+      <div className="work-card__action" data-selected={selected ? "true" : undefined}>
         {selected ? (
           "닫기 ✕"
         ) : (
-          <span className="flex items-center gap-1.5">
+          <span>
             상세 보기
-            <span className="transition-transform duration-300 group-hover:translate-x-1">
+            <span className="work-card__arrow">
               →
             </span>
           </span>

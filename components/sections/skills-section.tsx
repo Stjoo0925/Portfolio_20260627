@@ -12,22 +12,22 @@ export function SkillsSection() {
 
   return (
     <ScrollSection id="skills" align="start">
-      <FadeIn className="w-full max-w-6xl">
+      <FadeIn className="route-section-frame">
         <SectionHeader title={skills.title} />
 
-        <Stagger className={cn(UNIFORM_BENTO_GRID_CLASS, "mt-12")}>
+        <Stagger className={cn(UNIFORM_BENTO_GRID_CLASS, "route-section-grid")}>
           {skills.categories.map((cat) => (
-            <StaggerItem key={cat.name} className="min-h-0">
-              <ElevatedCard className="flex h-full flex-col p-8 md:p-9">
-                <h3 className="text-gold/90 mb-6 font-mono text-[11px] uppercase tracking-[0.2em]">
+            <StaggerItem key={cat.name} className="route-bento-item">
+              <ElevatedCard className="skill-card">
+                <h3 className="route-eyebrow">
                   {cat.name}
                 </h3>
-                <p className="font-display text-lg leading-relaxed text-foreground/90 break-keep md:text-xl">
+                <p className="skill-card__items">
                   {cat.items.map((item, itemIndex) => (
                     <span key={item}>
                       {itemIndex > 0 && (
                         <span
-                          className="text-muted/40 mx-3 font-sans text-sm"
+                          className="skill-card__separator"
                           aria-hidden
                         >
                           ·

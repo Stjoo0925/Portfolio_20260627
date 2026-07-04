@@ -17,17 +17,13 @@ export function SectionHeader({
     <header className={cn(className)}>
       <h2
         className={cn(
-          "font-display text-display-lg text-balance break-keep font-bold",
+          "section-header-title",
           titleClassName,
         )}
       >
         {title}
       </h2>
-      {lede && (
-        <p className="text-muted text-measure-wide mt-3 text-base leading-relaxed break-keep md:text-lg">
-          {lede}
-        </p>
-      )}
+      {lede && <p className="section-header-lede">{lede}</p>}
     </header>
   );
 }

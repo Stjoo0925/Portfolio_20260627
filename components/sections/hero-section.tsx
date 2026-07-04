@@ -10,27 +10,27 @@ export function HeroSection() {
 
   return (
     <ScrollSection id="hero">
-      <div className="w-full max-w-4xl">
-        <p className="text-accent mb-4 font-mono text-[11px] uppercase tracking-[0.24em]">
+      <div className="legacy-hero">
+        <p className="legacy-hero__greeting">
           {hero.greeting}
         </p>
 
-        <h1 className="font-display text-display-xl font-bold">
+        <h1 className="legacy-hero__title">
           <TextReveal text={hero.name} />
         </h1>
 
-        <p className="mt-4 font-display text-2xl italic md:text-3xl">
+        <p className="legacy-hero__role">
           <RoleCycle roles={hero.roles} />
         </p>
 
-        <p className="text-muted text-measure-wide mt-8 text-lg text-prose break-keep">
+        <p className="legacy-hero__tagline">
           {hero.tagline}
         </p>
 
         <Link
           href="/about"
           aria-label="Go to about"
-          className="mt-16 inline-flex text-accent"
+          className="legacy-hero__next"
         >
           <Icon name="ArrowDown" size={20} className="animate-bounce" />
         </Link>

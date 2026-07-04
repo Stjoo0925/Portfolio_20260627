@@ -3,6 +3,7 @@ import { Geist_Mono, Noto_Sans_KR, Playfair_Display } from "next/font/google";
 import { siteConfig } from "@/lib/site";
 import { loadSections } from "@/lib/content/load";
 import { PortfolioShell } from "@/components/layout/portfolio-shell";
+import { AstryxProvider } from "@/providers/astryx-provider";
 import { DetailPanelProvider } from "@/providers/detail-panel-provider";
 import "./globals.css";
 
@@ -57,12 +58,16 @@ export default function RootLayout({
   return (
     <html
       lang="ko"
+      data-theme="dark"
+      data-astryx-theme="neutral"
       className={`${notoSansKr.variable} ${playfairDisplay.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full select-none font-sans">
-        <DetailPanelProvider>
-          <PortfolioShell sections={sections}>{children}</PortfolioShell>
-        </DetailPanelProvider>
+        <AstryxProvider>
+          <DetailPanelProvider>
+            <PortfolioShell sections={sections}>{children}</PortfolioShell>
+          </DetailPanelProvider>
+        </AstryxProvider>
       </body>
     </html>
   );

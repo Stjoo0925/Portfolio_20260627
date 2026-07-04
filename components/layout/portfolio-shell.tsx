@@ -5,14 +5,12 @@ import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { Icon } from "@/components/ui/icon";
 import {
+  HOME_SECTION_ID,
   getActiveSection,
   getSectionHref,
-  getSectionIndex,
-  getSectionNeighbors,
   getSectionTheme,
 } from "@/lib/section-routes";
 import { siteConfig } from "@/lib/site";
-import { cn } from "@/lib/utils";
 import type { Section } from "@/lib/content/schema";
 
 export function PortfolioShell({
@@ -25,16 +23,13 @@ export function PortfolioShell({
   const pathname = usePathname();
   const activeSection = getActiveSection(pathname, sections);
   const theme = getSectionTheme(activeSection.id);
-  const { previous, next } = getSectionNeighbors(activeSection.id, sections);
-  const activeIndex = getSectionIndex(activeSection.id, sections);
-  const progress =
-    sections.length <= 1 ? 100 : (activeIndex / (sections.length - 1)) * 100;
+  const dockSections = sections.filter((section) => section.id !== HOME_SECTION_ID);
 
   useEffect(() => {
     document.documentElement.style.setProperty("--section-accent", theme.accent);
     document.documentElement.style.setProperty(
       "--section-accent-soft",
-      `${theme.accent}29`,
+      "color-mix(in oklab, var(--section-accent) 22%, transparent)",
     );
   }, [theme.accent]);
 
@@ -46,41 +41,29 @@ export function PortfolioShell({
 
       <nav
         aria-label="Portfolio navigation"
-        className="pointer-events-none fixed right-3 bottom-3 left-3 md:right-6 md:bottom-6 md:left-6"
-        style={{ zIndex: "var(--z-header)" }}
+        className="portfolio-dock"
       >
-        <div className="mx-auto grid max-w-5xl grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 border border-border bg-background/90 p-2 shadow-[0_20px_70px_rgba(0,0,0,0.42)] backdrop-blur-xl md:gap-3 md:p-3">
+        <div className="portfolio-dock__panel">
           <Link
             href="/"
-            className="pointer-events-auto flex h-11 w-11 shrink-0 items-center justify-center border border-border bg-background-elevated font-display text-base font-bold tracking-tight text-foreground transition-colors hover:border-accent/50 hover:text-accent focus-visible:border-accent focus-visible:outline-none md:h-12 md:w-12"
-            style={{ borderRadius: 8 }}
+            className="portfolio-dock__home"
             aria-label="Home"
+            aria-current={activeSection.id === HOME_SECTION_ID ? "page" : undefined}
+            data-active={activeSection.id === HOME_SECTION_ID ? "true" : undefined}
           >
-            {siteConfig.initials}
+            <span className="portfolio-dock__home-mark">{siteConfig.initials}</span>
           </Link>
 
-          <div className="min-w-0">
-            <div className="pointer-events-auto flex items-center gap-1 overflow-x-auto px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              {sections.map((section, index) => (
+          <div className="portfolio-dock__track">
+            <div className="portfolio-dock__links">
+              {dockSections.map((section) => (
                 <SectionDockLink
                   key={section.id}
                   section={section}
-                  index={index}
                   active={section.id === activeSection.id}
                 />
               ))}
             </div>
-            <div className="mx-2 mt-2 hidden h-px overflow-hidden bg-border md:block">
-              <div
-                className="h-full bg-accent transition-[width] duration-300"
-                style={{ width: `${progress}%` }}
-              />
-            </div>
-          </div>
-
-          <div className="flex shrink-0 items-center gap-1.5">
-            <RouteStepLink direction="previous" section={previous} />
-            <RouteStepLink direction="next" section={next} />
           </div>
         </div>
       </nav>
@@ -90,69 +73,55 @@ export function PortfolioShell({
 
 function SectionDockLink({
   section,
-  index,
   active,
 }: {
   section: Section;
-  index: number;
   active: boolean;
 }) {
   const theme = getSectionTheme(section.id);
+  const label = getSectionLabel(section.id);
 
   return (
     <Link
       href={getSectionHref(section.id)}
-      className={cn(
-        "group flex h-10 shrink-0 items-center gap-2 border px-3 font-mono text-[10px] tracking-[0.16em] uppercase transition-colors focus-visible:border-accent focus-visible:outline-none md:h-11 md:px-4",
-        active
-          ? "border-border bg-white/[0.045] text-foreground"
-          : "border-transparent text-muted hover:border-border hover:bg-white/[0.025] hover:text-foreground",
-      )}
-      style={{ borderRadius: 8 }}
+      className="portfolio-dock__link"
+      data-active={active ? "true" : undefined}
       aria-current={active ? "page" : undefined}
+      aria-label={label}
+      title={label}
+      style={{ "--dock-link-accent": theme.accent } as React.CSSProperties}
     >
-      <span
-        className="text-[9px]"
-        style={active ? { color: theme.accent } : undefined}
-      >
-        {String(index + 1).padStart(2, "0")}
+      <span className="portfolio-dock__link-icon" aria-hidden>
+        <Icon name={getSectionIcon(section.id)} size={16} />
       </span>
-      <span className="max-w-24 truncate">{section.id}</span>
     </Link>
   );
 }
 
-function RouteStepLink({
-  direction,
-  section,
-}: {
-  direction: "previous" | "next";
-  section: Section | null;
-}) {
-  const isNext = direction === "next";
+function getSectionLabel(sectionId: string) {
+  const labels: Record<string, string> = {
+    hero: "Home",
+    about: "About",
+    skills: "Skills",
+    experience: "Career",
+    projects: "Work",
+    lab: "Lab",
+    contact: "Contact",
+  };
 
-  if (!section) {
-    return (
-      <span
-        className="hidden h-11 w-11 shrink-0 border border-transparent md:block"
-        aria-hidden
-      />
-    );
-  }
+  return labels[sectionId] ?? sectionId;
+}
 
-  return (
-    <Link
-      href={getSectionHref(section.id)}
-      className={cn(
-        "pointer-events-auto group flex h-11 w-11 shrink-0 items-center justify-center border border-border bg-background-elevated text-muted transition-colors hover:border-accent/45 hover:text-foreground focus-visible:border-accent focus-visible:outline-none md:w-auto md:min-w-28 md:gap-2 md:px-3",
-      )}
-      style={{ borderRadius: 8 }}
-      aria-label={`${isNext ? "Go to next section" : "Go to previous section"}: ${section.id}`}
-    >
-      <Icon name={isNext ? "ArrowRight" : "ArrowLeft"} size={16} />
-      <span className="hidden min-w-0 font-mono text-[10px] tracking-[0.16em] uppercase md:block">
-        {isNext ? "Next" : "Prev"}
-      </span>
-    </Link>
-  );
+function getSectionIcon(sectionId: string) {
+  const icons: Record<string, string> = {
+    hero: "Home",
+    about: "UserRound",
+    skills: "Wrench",
+    experience: "BriefcaseBusiness",
+    projects: "FolderKanban",
+    lab: "FlaskConical",
+    contact: "Send",
+  };
+
+  return icons[sectionId] ?? "Home";
 }
