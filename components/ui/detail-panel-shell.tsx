@@ -1,9 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import { useDetailPanelLock } from "@/hooks/use-detail-panel-lock";
 import { cn } from "@/lib/utils";
+
+const subscribeToHydration = () => () => {};
+const getClientSnapshot = () => true;
+const getServerSnapshot = () => false;
+
+function useMounted() {
+  return useSyncExternalStore(
+    subscribeToHydration,
+    getClientSnapshot,
+    getServerSnapshot,
+  );
+}
 
 export function DetailPanelShell({
   open,
@@ -19,11 +31,7 @@ export function DetailPanelShell({
   children: React.ReactNode;
 }) {
   useDetailPanelLock(open);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useMounted();
 
   useEffect(() => {
     if (!open) return;
@@ -85,7 +93,6 @@ export function DetailPanelShell({
         </div>
         <div
           className="detail-body min-h-0 flex-1 overflow-y-auto overscroll-contain px-6 py-6 md:px-8 md:py-8"
-          data-lenis-prevent
         >
           {children}
         </div>

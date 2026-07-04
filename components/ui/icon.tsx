@@ -1,4 +1,11 @@
-import { ArrowDown, ExternalLink, Mail, type LucideIcon } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowLeft,
+  ArrowRight,
+  ExternalLink,
+  Mail,
+  type LucideIcon,
+} from "lucide-react";
 
 type IconProps = { size?: number; className?: string };
 
@@ -77,6 +84,8 @@ const registry: Record<string, IconComponent> = {
   Discord: DiscordIcon,
   Mail,
   ArrowDown,
+  ArrowLeft,
+  ArrowRight,
   ExternalLink,
 };
 

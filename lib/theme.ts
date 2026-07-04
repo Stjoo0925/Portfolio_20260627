@@ -1,7 +1,3 @@
-/**
- * Constellation theme — shared between CSS tokens and R3F scene.
- * Keep in sync with app/globals.css values.
- */
 export const theme = {
   color: {
     background: "#05070d",

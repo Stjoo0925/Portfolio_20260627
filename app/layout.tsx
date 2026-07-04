@@ -3,7 +3,6 @@ import { Geist_Mono, Noto_Sans_KR, Playfair_Display } from "next/font/google";
 import { siteConfig } from "@/lib/site";
 import { loadSections } from "@/lib/content/load";
 import { PortfolioShell } from "@/components/layout/portfolio-shell";
-import { SmoothScrollProvider } from "@/providers/smooth-scroll-provider";
 import { DetailPanelProvider } from "@/providers/detail-panel-provider";
 import "./globals.css";
 
@@ -62,9 +61,7 @@ export default function RootLayout({
     >
       <body className="min-h-full select-none font-sans">
         <DetailPanelProvider>
-          <SmoothScrollProvider>
-            <PortfolioShell sections={sections}>{children}</PortfolioShell>
-          </SmoothScrollProvider>
+          <PortfolioShell sections={sections}>{children}</PortfolioShell>
         </DetailPanelProvider>
       </body>
     </html>
