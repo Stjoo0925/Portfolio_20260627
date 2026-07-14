@@ -3,6 +3,7 @@ import { Noto_Sans_KR, Playfair_Display } from "next/font/google";
 import { siteConfig } from "@/lib/site";
 import { loadSections } from "@/lib/content/load";
 import { PortfolioShell } from "@/components/layout/portfolio-shell";
+import { GalaxyRoot } from "@/components/galaxy/galaxy-root";
 import { PointerField } from "@/components/motion/pointer-field";
 import { ScrollReveal } from "@/components/motion/scroll-reveal";
 import { AstryxProvider } from "@/providers/astryx-provider";
@@ -60,6 +61,7 @@ export default function RootLayout({
       className={`${notoSansKr.variable} ${playfairDisplay.variable} h-full antialiased`}
     >
       <body className="min-h-full select-none font-sans">
+        <GalaxyRoot />
         <ScrollReveal />
         <PointerField />
         <AstryxProvider>
