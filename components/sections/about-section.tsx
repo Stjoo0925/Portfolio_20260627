@@ -16,17 +16,12 @@ export function AboutSection() {
         <ElevatedCard className="route-panel-card">
           <Stagger>
             <StaggerItem>
-              <div className="section-card-slab section-token-divider">
+              <div className="about-lead">
                 <blockquote className="section-quote">
                   <p className="section-quote-text">
                     {about.quote}
                   </p>
                 </blockquote>
-              </div>
-            </StaggerItem>
-
-            <StaggerItem>
-              <div className="section-card-slab">
                 <p className="section-intro-copy">
                   {about.intro}
                 </p>
@@ -34,7 +29,7 @@ export function AboutSection() {
             </StaggerItem>
 
             <StaggerItem>
-              <div className="section-body-stack section-token-divider">
+              <div className="about-body section-token-divider">
                 {about.paragraphs.map((paragraph, index) => (
                   <p
                     key={index}

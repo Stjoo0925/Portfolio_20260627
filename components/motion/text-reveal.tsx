@@ -1,3 +1,5 @@
+import type { CSSProperties } from "react";
+
 export function TextReveal({
   text,
   className,
@@ -10,8 +12,13 @@ export function TextReveal({
   return (
     <span className={className}>
       {words.map((word, index) => (
-        <span key={`${word}-${index}`} className="mr-[0.25em] inline-block">
-          {word}
+        <span key={`${word}-${index}`} className="text-reveal__mask">
+          <span
+            className="text-reveal__word"
+            style={{ "--word-index": index } as CSSProperties}
+          >
+            {word}
+          </span>
         </span>
       ))}
     </span>

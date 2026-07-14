@@ -1,4 +1,6 @@
-import type { ReactNode } from "react";
+"use client";
+
+import type { PointerEvent, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 type ElevatedCardProps = {
@@ -9,6 +11,13 @@ type ElevatedCardProps = {
   onClick?: () => void;
   type?: "button";
 };
+
+function trackPointer(event: PointerEvent<HTMLElement>) {
+  const element = event.currentTarget;
+  const rect = element.getBoundingClientRect();
+  element.style.setProperty("--pointer-x", `${event.clientX - rect.left}px`);
+  element.style.setProperty("--pointer-y", `${event.clientY - rect.top}px`);
+}
 
 export function ElevatedCard({
   children,
@@ -27,11 +36,20 @@ export function ElevatedCard({
 
   if (as === "button") {
     return (
-      <button type={type ?? "button"} onClick={onClick} className={classes}>
+      <button
+        type={type ?? "button"}
+        onClick={onClick}
+        onPointerMove={trackPointer}
+        className={classes}
+      >
         {children}
       </button>
     );
   }
 
-  return <div className={classes}>{children}</div>;
+  return (
+    <div className={classes} onPointerMove={trackPointer}>
+      {children}
+    </div>
+  );
 }

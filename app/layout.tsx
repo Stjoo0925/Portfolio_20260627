@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
-import { Geist_Mono, Noto_Sans_KR, Playfair_Display } from "next/font/google";
+import { Noto_Sans_KR, Playfair_Display } from "next/font/google";
 import { siteConfig } from "@/lib/site";
 import { loadSections } from "@/lib/content/load";
 import { PortfolioShell } from "@/components/layout/portfolio-shell";
+import { PointerField } from "@/components/motion/pointer-field";
+import { ScrollReveal } from "@/components/motion/scroll-reveal";
 import { AstryxProvider } from "@/providers/astryx-provider";
 import { DetailPanelProvider } from "@/providers/detail-panel-provider";
 import "./globals.css";
@@ -18,11 +20,6 @@ const playfairDisplay = Playfair_Display({
   subsets: ["latin"],
   weight: ["400", "500", "700"],
   style: ["normal", "italic"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
@@ -60,9 +57,11 @@ export default function RootLayout({
       lang="ko"
       data-theme="dark"
       data-astryx-theme="neutral"
-      className={`${notoSansKr.variable} ${playfairDisplay.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${notoSansKr.variable} ${playfairDisplay.variable} h-full antialiased`}
     >
       <body className="min-h-full select-none font-sans">
+        <ScrollReveal />
+        <PointerField />
         <AstryxProvider>
           <DetailPanelProvider>
             <PortfolioShell sections={sections}>{children}</PortfolioShell>

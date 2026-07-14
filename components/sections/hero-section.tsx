@@ -1,9 +1,13 @@
 import Link from "next/link";
+import type { CSSProperties } from "react";
 import { TextReveal } from "@/components/motion/text-reveal";
 import { ScrollSection } from "@/components/ui/scroll-section";
 import { RoleCycle } from "@/components/ui/role-cycle";
-import { Icon } from "@/components/ui/icon";
 import { loadHero } from "@/lib/content/load";
+
+function enterDelay(ms: number) {
+  return { "--enter-delay": `${ms}ms` } as CSSProperties;
+}
 
 export function HeroSection() {
   const hero = loadHero();
@@ -11,7 +15,7 @@ export function HeroSection() {
   return (
     <ScrollSection id="hero">
       <div className="legacy-hero">
-        <p className="legacy-hero__greeting">
+        <p className="legacy-hero__greeting hero-enter" style={enterDelay(80)}>
           {hero.greeting}
         </p>
 
@@ -19,20 +23,27 @@ export function HeroSection() {
           <TextReveal text={hero.name} />
         </h1>
 
-        <p className="legacy-hero__role">
+        <div
+          className="legacy-hero__rule hero-rule"
+          style={enterDelay(620)}
+          aria-hidden
+        />
+
+        <p className="legacy-hero__role hero-enter" style={enterDelay(760)}>
           <RoleCycle roles={hero.roles} />
         </p>
 
-        <p className="legacy-hero__tagline">
+        <p className="legacy-hero__tagline hero-enter" style={enterDelay(920)}>
           {hero.tagline}
         </p>
 
         <Link
           href="/about"
           aria-label="Go to about"
-          className="legacy-hero__next"
+          className="legacy-hero__next hero-enter"
+          style={enterDelay(1200)}
         >
-          <Icon name="ArrowDown" size={20} className="animate-bounce" />
+          <span className="scroll-cue" aria-hidden />
         </Link>
       </div>
     </ScrollSection>

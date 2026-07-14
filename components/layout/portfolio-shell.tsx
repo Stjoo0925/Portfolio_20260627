@@ -13,6 +13,18 @@ import {
 import { siteConfig } from "@/lib/site";
 import type { Section } from "@/lib/content/schema";
 
+function magnetize(event: React.PointerEvent<HTMLElement>) {
+  const element = event.currentTarget;
+  const rect = element.getBoundingClientRect();
+  const dx = event.clientX - (rect.left + rect.width / 2);
+  const dy = event.clientY - (rect.top + rect.height / 2);
+  element.style.transform = `translate(${dx * 0.24}px, ${dy * 0.24}px)`;
+}
+
+function demagnetize(event: React.PointerEvent<HTMLElement>) {
+  event.currentTarget.style.transform = "";
+}
+
 export function PortfolioShell({
   children,
   sections,
@@ -47,6 +59,8 @@ export function PortfolioShell({
           <Link
             href="/"
             className="portfolio-dock__home"
+            onPointerMove={magnetize}
+            onPointerLeave={demagnetize}
             aria-label="Home"
             aria-current={activeSection.id === HOME_SECTION_ID ? "page" : undefined}
             data-active={activeSection.id === HOME_SECTION_ID ? "true" : undefined}
@@ -85,6 +99,8 @@ function SectionDockLink({
     <Link
       href={getSectionHref(section.id)}
       className="portfolio-dock__link"
+      onPointerMove={magnetize}
+      onPointerLeave={demagnetize}
       data-active={active ? "true" : undefined}
       aria-current={active ? "page" : undefined}
       aria-label={label}
