@@ -6,6 +6,8 @@ export type GalaxyNode = {
   position: [number, number, number];
   /** Sphere radius in world units. Featured nodes read larger. */
   radius: number;
+  /** Muted editorial accent used to identify interactive nodes. */
+  accent: string;
   featured?: boolean;
 };
 
@@ -15,19 +17,17 @@ export type GalaxyConnection = {
 };
 
 /**
- * Main interactive nodes. Positions form a loose spiral cluster in front of
- * the default camera (z ≈ +26 looking at origin): dense center, sparse rim.
+ * Main interactive nodes — one per navigation section (kept 1:1 with the
+ * navbar). Positions form a loose cluster in front of the default camera
+ * (z ≈ +26 looking at origin): dense center, sparse rim.
  */
 export const galaxyNodes: GalaxyNode[] = [
-  { id: "about", label: "ABOUT ME", href: "/about", position: [-5.6, 2.4, -2], radius: 0.82 },
-  { id: "skills", label: "SKILLS", href: "/skills", position: [5.4, 3.4, -6], radius: 0.78 },
-  { id: "experience", label: "EXPERIENCE", href: "/experience", position: [-9.8, -1.2, -9], radius: 0.78 },
-  { id: "projects", label: "SELECTED PROJECTS", href: "/projects", position: [7.6, -2.2, -1.5], radius: 1.02, featured: true },
-  { id: "lab", label: "LAB", href: "/lab", position: [1.4, 5.4, -12], radius: 0.7 },
-  { id: "contact", label: "CONTACT", href: "/contact", position: [10.6, 3.6, -15], radius: 0.66 },
-  { id: "narrativa", label: "NARRATIVA", href: "/projects", position: [2.8, -5, -8], radius: 0.88, featured: true },
-  { id: "leafresh", label: "LEAFRESH", href: "/projects", position: [-3.2, -4.4, -14], radius: 0.74 },
-  { id: "afterburner", label: "AFTERBURNER", href: "/projects", position: [-8.4, 4.6, -17], radius: 0.74 },
+  { id: "about", label: "ABOUT ME", href: "/about", position: [-6.4, 2.8, -2], radius: 0.86, accent: "#8FB8D8" },
+  { id: "skills", label: "SKILLS", href: "/skills", position: [5.6, 3.8, -6], radius: 0.8, accent: "#8FBFAE" },
+  { id: "experience", label: "EXPERIENCE", href: "/experience", position: [-9.6, -2, -10], radius: 0.8, accent: "#C7A96B" },
+  { id: "projects", label: "PROJECTS", href: "/projects", position: [7.2, -2.6, -2], radius: 1.05, accent: "#C8897A", featured: true },
+  { id: "lab", label: "LAB", href: "/lab", position: [0.6, 5.4, -12], radius: 0.72, accent: "#A99BCB" },
+  { id: "contact", label: "CONTACT", href: "/contact", position: [-1.8, -5, -7], radius: 0.72, accent: "#9EB98E" },
 ];
 
 /** Faint curved silver paths; electrons travel along these. */
@@ -35,13 +35,11 @@ export const galaxyConnections: GalaxyConnection[] = [
   { from: "about", to: "skills" },
   { from: "skills", to: "experience" },
   { from: "experience", to: "projects" },
-  { from: "projects", to: "narrativa" },
-  { from: "projects", to: "leafresh" },
-  { from: "projects", to: "afterburner" },
-  { from: "skills", to: "lab" },
-  { from: "lab", to: "projects" },
+  { from: "projects", to: "lab" },
+  { from: "lab", to: "skills" },
   { from: "about", to: "contact" },
-  { from: "narrativa", to: "leafresh" },
+  { from: "contact", to: "projects" },
+  { from: "experience", to: "contact" },
 ];
 
 export const nodeById = new Map(galaxyNodes.map((node) => [node.id, node]));

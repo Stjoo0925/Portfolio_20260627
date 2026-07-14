@@ -165,8 +165,13 @@ export function CameraRig() {
       const p = easeInOutCubic(clamp01((now - phaseStart) / RETURN_MS));
       camera.position.lerpVectors(r.returnFromPos, scratch.desired, p);
       r.look.lerpVectors(r.returnFromLook, scratch.desiredLook, p);
+    } else if (phase === "project") {
+      // Reset to the idle vantage under the opaque route overlay so the
+      // dimmed galaxy reads as a calm backdrop (and detail → detail
+      // navigation never starts pressed up against a sphere)
+      camera.position.copy(scratch.desired);
+      r.look.copy(scratch.desiredLook);
     }
-    // phase === "project": hold the last frame while the page is open
 
     camera.lookAt(r.look);
   });

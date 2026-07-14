@@ -1,5 +1,8 @@
 "use client";
 
+/* eslint-disable react-hooks/immutability -- three.js objects are animated
+   imperatively inside the R3F frame loop; they are not React-rendered state */
+
 import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";

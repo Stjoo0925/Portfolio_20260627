@@ -1,5 +1,8 @@
 "use client";
 
+/* eslint-disable react-hooks/immutability -- assigning scene.environment is
+   the three.js API for environment maps; the scene is not React-rendered state */
+
 import { useEffect } from "react";
 import { useThree } from "@react-three/fiber";
 import * as THREE from "three";

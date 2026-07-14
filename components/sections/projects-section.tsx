@@ -19,7 +19,7 @@ export function ProjectsSection() {
 
   return (
     <>
-      <ScrollSection id="projects" align="start">
+      <ScrollSection id="projects" align="center">
         <FadeIn className="route-section-frame">
           <SectionHeader title={data.title} lede={data.intro} />
 

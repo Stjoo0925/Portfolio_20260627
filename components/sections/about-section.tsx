@@ -1,48 +1,33 @@
 import { FadeIn } from "@/components/motion/fade-in";
-import { Stagger, StaggerItem } from "@/components/motion/stagger";
 import { ScrollSection } from "@/components/ui/scroll-section";
-import { SectionHeader } from "@/components/ui/section-header";
-import { ElevatedCard } from "@/components/ui/elevated-card";
 import { loadAbout } from "@/lib/content/load";
 
 export function AboutSection() {
   const about = loadAbout();
 
   return (
-    <ScrollSection id="about" align="start">
-      <FadeIn className="route-section-frame">
-        <SectionHeader title={about.title} />
+    <ScrollSection id="about" align="start" snap={false}>
+      <FadeIn className="route-section-frame about-editorial">
+        <header className="about-editorial__masthead">
+          <h2>{about.title}</h2>
+        </header>
 
-        <ElevatedCard className="route-panel-card">
-          <Stagger>
-            <StaggerItem>
-              <div className="about-lead">
-                <blockquote className="section-quote">
-                  <p className="section-quote-text">
-                    {about.quote}
-                  </p>
-                </blockquote>
-                <p className="section-intro-copy">
-                  {about.intro}
-                </p>
-              </div>
-            </StaggerItem>
+        <div className="about-editorial__lead">
+          <p className="about-editorial__intro">{about.intro}</p>
+          <blockquote className="about-editorial__quote">
+            <p>{about.quote}</p>
+          </blockquote>
+        </div>
 
-            <StaggerItem>
-              <div className="about-body section-token-divider">
-                {about.paragraphs.map((paragraph, index) => (
-                  <p
-                    key={index}
-                    className="section-body-copy"
-                    data-secondary={index > 0 ? "true" : undefined}
-                  >
-                    {paragraph}
-                  </p>
-                ))}
-              </div>
-            </StaggerItem>
-          </Stagger>
-        </ElevatedCard>
+        <div className="about-editorial__story">
+          <div className="about-editorial__columns">
+            {about.paragraphs.map((paragraph, index) => (
+              <p key={index} data-first={index === 0 ? "true" : undefined}>
+                {paragraph}
+              </p>
+            ))}
+          </div>
+        </div>
       </FadeIn>
     </ScrollSection>
   );

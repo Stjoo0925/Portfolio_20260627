@@ -1,5 +1,8 @@
 "use client";
 
+/* eslint-disable react-hooks/immutability -- three.js objects are animated
+   imperatively inside the R3F frame loop; they are not React-rendered state */
+
 import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Html } from "@react-three/drei";
@@ -8,9 +11,7 @@ import { galaxyNodes, type GalaxyNode } from "@/lib/galaxy/nodes";
 import {
   CONVERGE_MS,
   FOCUS_MS,
-  RETURN_MS,
   clamp01,
-  easeInOutCubic,
   easeOutExpo,
   useGalaxyStore,
 } from "@/store/galaxy-store";
@@ -32,12 +33,13 @@ const FRESNEL_VERTEX = /* glsl */ `
 
 const FRESNEL_FRAGMENT = /* glsl */ `
   uniform float uIntensity;
+  uniform vec3 uColor;
   varying vec3 vNormal;
   varying vec3 vView;
 
   void main() {
     float fresnel = pow(1.0 - abs(dot(normalize(vNormal), normalize(vView))), 2.6);
-    gl_FragColor = vec4(vec3(0.88, 0.9, 0.95), fresnel * uIntensity);
+    gl_FragColor = vec4(uColor, fresnel * uIntensity);
   }
 `;
 
@@ -80,12 +82,15 @@ function InteractiveNode({ node }: { node: GalaxyNode }) {
       new THREE.ShaderMaterial({
         vertexShader: FRESNEL_VERTEX,
         fragmentShader: FRESNEL_FRAGMENT,
-        uniforms: { uIntensity: { value: 0.35 } },
+        uniforms: {
+          uIntensity: { value: 0.35 },
+          uColor: { value: new THREE.Color(node.accent) },
+        },
         transparent: true,
         depthWrite: false,
         blending: THREE.AdditiveBlending,
       }),
-    [],
+    [node.accent],
   );
   const glowRef = useRef<THREE.Sprite>(null);
   const ringRef = useRef<THREE.Mesh>(null);
@@ -95,8 +100,15 @@ function InteractiveNode({ node }: { node: GalaxyNode }) {
   const labelRef = useRef<HTMLDivElement>(null);
 
   const glowMap = useMemo(() => getGlowTexture(), []);
-  const baseColor = useMemo(() => new THREE.Color("#c9c9cf"), []);
-  const brightColor = useMemo(() => new THREE.Color("#f4f4f7"), []);
+  const accentColor = useMemo(() => new THREE.Color(node.accent), [node.accent]);
+  const baseColor = useMemo(
+    () => new THREE.Color("#c9c9cf").lerp(new THREE.Color(node.accent), 0.42),
+    [node.accent],
+  );
+  const brightColor = useMemo(
+    () => new THREE.Color("#f4f4f7").lerp(new THREE.Color(node.accent), 0.45),
+    [node.accent],
+  );
 
   const selectNode = () => {
     const store = useGalaxyStore.getState();
@@ -127,19 +139,16 @@ function InteractiveNode({ node }: { node: GalaxyNode }) {
       if (sphereRef.current) sphereRef.current.rotation.y += delta * 0.08;
     }
 
-    // Scale: hover 1.05, selected node expands during focus, shrinks on return
-    let targetScale = isActive ? 1.05 : 1;
+    // Scale: hover 1.05; the selected node expands while the camera flies in,
+    // then quietly deflates behind the opened page (the overlay hides the cut)
+    const targetScale = isActive ? 1.05 : 1;
     if (isSelected && phase === "focusing") {
       const p = easeOutExpo(clamp01((now - phaseStart) / FOCUS_MS));
-      targetScale = 1 + (EXPAND_RADIUS / node.radius - 1) * p;
-      group.scale.setScalar(targetScale);
-    } else if (isSelected && phase === "project") {
-      group.scale.setScalar(EXPAND_RADIUS / node.radius);
-    } else if (isSelected && phase === "returning") {
-      const p = easeInOutCubic(clamp01((now - phaseStart) / RETURN_MS));
-      group.scale.setScalar(
-        EXPAND_RADIUS / node.radius + (1 - EXPAND_RADIUS / node.radius) * p,
-      );
+      group.scale.setScalar(1 + (EXPAND_RADIUS / node.radius - 1) * p);
+    } else if (phase === "project") {
+      // The route enters under an opaque overlay. Reset here so the enlarged
+      // transition sphere cannot linger behind the editorial page reveal.
+      group.scale.setScalar(1);
     } else {
       group.scale.lerp(
         new THREE.Vector3(targetScale, targetScale, targetScale),
@@ -149,10 +158,21 @@ function InteractiveNode({ node }: { node: GalaxyNode }) {
 
     // Brightness: silver → near-white on selection; unrelated nodes dim away
     const dimmed = inTransition && !isSelected;
-    const emissiveTarget = isSelected && phase !== "exploring" ? 0.5 : isActive ? 0.22 : 0.05;
+    const emissiveTarget =
+      isSelected && phase !== "exploring"
+        ? 0.5
+        : isActive
+          ? 0.22
+          : node.featured
+            ? 0.16
+            : 0.11;
     material.emissiveIntensity +=
       (emissiveTarget - material.emissiveIntensity) * damp;
-    material.color.lerp(isSelected && inTransition ? brightColor : baseColor, damp);
+    material.emissive.lerp(accentColor, damp);
+    material.color.lerp(
+      isSelected && inTransition ? brightColor : isActive ? accentColor : baseColor,
+      damp,
+    );
     material.opacity += ((dimmed ? 0.22 : 1) - material.opacity) * damp;
 
     const shellTarget = isSelected && inTransition ? 0.85 : isActive ? 0.7 : 0.32;
@@ -220,11 +240,11 @@ function InteractiveNode({ node }: { node: GalaxyNode }) {
         <sphereGeometry args={[node.radius, 48, 48]} />
         <meshStandardMaterial
           ref={materialRef}
-          color="#c9c9cf"
+          color={baseColor}
           metalness={1}
           roughness={0.26}
           envMapIntensity={1.05}
-          emissive="#dfe0e6"
+          emissive={node.accent}
           emissiveIntensity={0.05}
           transparent
         />
@@ -239,6 +259,7 @@ function InteractiveNode({ node }: { node: GalaxyNode }) {
       <sprite ref={glowRef} scale={node.radius * 6} raycast={() => null}>
         <spriteMaterial
           map={glowMap}
+          color={node.accent}
           transparent
           opacity={0.14}
           depthWrite={false}
@@ -251,7 +272,7 @@ function InteractiveNode({ node }: { node: GalaxyNode }) {
         <torusGeometry args={[node.radius * 1.75, 0.008, 8, 72]} />
         <meshBasicMaterial
           ref={ringMaterialRef}
-          color="#e8e8ee"
+          color={node.accent}
           transparent
           opacity={0}
           depthWrite={false}
@@ -263,7 +284,7 @@ function InteractiveNode({ node }: { node: GalaxyNode }) {
         <ringGeometry args={[0.92, 1, 64]} />
         <meshBasicMaterial
           ref={shockMaterialRef}
-          color="#ffffff"
+          color={node.accent}
           transparent
           opacity={0}
           depthWrite={false}
@@ -277,7 +298,12 @@ function InteractiveNode({ node }: { node: GalaxyNode }) {
         style={{ pointerEvents: "none" }}
         zIndexRange={[40, 0]}
       >
-        <div ref={labelRef} className="node-label" data-visible="false">
+        <div
+          ref={labelRef}
+          className="node-label"
+          data-visible="false"
+          style={{ color: node.accent }}
+        >
           <span className="node-label__rule" aria-hidden />
           {node.label}
         </div>

@@ -1,14 +1,12 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import Link from "next/link";
 import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { findNodeByPathname, nodeById } from "@/lib/galaxy/nodes";
 import {
   CONVERGE_MS,
   FOCUS_MS,
-  RETURN_MS,
   useGalaxyStore,
 } from "@/store/galaxy-store";
 
@@ -79,14 +77,6 @@ export function GalaxyRoot() {
       return () => window.clearTimeout(id);
     }
 
-    if (phase === "returning") {
-      const id = window.setTimeout(() => {
-        const current = useGalaxyStore.getState();
-        current.setPhase("exploring");
-        current.setSelected(null);
-      }, RETURN_MS);
-      return () => window.clearTimeout(id);
-    }
   }, [phase, router]);
 
   // Route ↔ phase sync (covers browser back/forward and deep links)
@@ -94,14 +84,10 @@ export function GalaxyRoot() {
     const store = useGalaxyStore.getState();
 
     if (pathname === "/") {
-      if (store.phase === "project") {
-        if (store.selectedId && !store.reducedMotion) {
-          store.setPhase("returning");
-        } else {
-          store.setSelected(null);
-          store.setPhase("exploring");
-        }
-      }
+      store.setHovered(null);
+      store.setFocused(null);
+      store.setSelected(null);
+      store.setPhase("exploring");
       return;
     }
 
@@ -130,21 +116,14 @@ export function GalaxyRoot() {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [router]);
 
+  if (!webglAvailable) return null;
+
   return (
     <>
-      {webglAvailable && (
-        <>
-          <div className="galaxy-layer" data-dim={phase === "project" ? "true" : "false"}>
-            <GalaxyCanvas />
-          </div>
-          <div className="galaxy-transition-overlay" data-phase={phase} aria-hidden />
-        </>
-      )}
-      {pathname !== "/" && (
-        <Link href="/" className="galaxy-back">
-          <span aria-hidden>←</span> GALAXY
-        </Link>
-      )}
+      <div className="galaxy-layer" data-dim={phase === "project" ? "true" : "false"}>
+        <GalaxyCanvas />
+      </div>
+      <div className="galaxy-transition-overlay" data-phase={phase} aria-hidden />
     </>
   );
 }

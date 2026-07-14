@@ -1,11 +1,6 @@
 import { FadeIn } from "@/components/motion/fade-in";
-import { Stagger, StaggerItem } from "@/components/motion/stagger";
 import { ScrollSection } from "@/components/ui/scroll-section";
-import { SectionHeader } from "@/components/ui/section-header";
-import { ElevatedCard } from "@/components/ui/elevated-card";
 import { loadExperience } from "@/lib/content/load";
-import { UNIFORM_BENTO_GRID_CLASS } from "@/lib/ui/bento-grid";
-import { cn } from "@/lib/utils";
 
 function ExperienceColumn({
   title,
@@ -15,16 +10,10 @@ function ExperienceColumn({
   children: React.ReactNode;
 }) {
   return (
-    <StaggerItem className="route-bento-item">
-      <ElevatedCard className="experience-column">
-        <h3 className="route-eyebrow">
-          {title}
-        </h3>
-        <ul className="experience-list experience-line">
-          {children}
-        </ul>
-      </ElevatedCard>
-    </StaggerItem>
+    <section className="career-editorial__section">
+      <h3>{title}</h3>
+      <ul>{children}</ul>
+    </section>
   );
 }
 
@@ -40,22 +29,19 @@ function ExperienceItem({
   extra?: string;
 }) {
   return (
-    <li className="experience-item">
-      <span className="experience-dot" />
-      <h4 className="experience-item__title">
-        {title}
-      </h4>
+    <li className="career-editorial__item">
+      <h4>{title}</h4>
       {period && (
-        <p className="experience-item__meta">
+        <p className="career-editorial__period">
           {period}
         </p>
       )}
       {subtitle && (
-        <p className="experience-item__body">
+        <p className="career-editorial__body">
           {subtitle}
         </p>
       )}
-      {extra && <p className="experience-item__extra">{extra}</p>}
+      {extra && <p className="career-editorial__extra">{extra}</p>}
     </li>
   );
 }
@@ -64,11 +50,12 @@ export function ExperienceSection() {
   const exp = loadExperience();
 
   return (
-    <ScrollSection id="experience" align="start">
-      <FadeIn className="route-section-frame">
-        <SectionHeader title={exp.title} />
-
-        <Stagger className={cn(UNIFORM_BENTO_GRID_CLASS, "route-section-grid")}>
+    <ScrollSection id="experience" align="start" snap={false}>
+      <FadeIn className="route-section-frame editorial-page career-editorial">
+        <header className="editorial-masthead">
+          <h2>{exp.title}</h2>
+        </header>
+        <div className="career-editorial__grid">
           <ExperienceColumn title="Career">
             {exp.career.map((item) => (
               <ExperienceItem
@@ -112,7 +99,7 @@ export function ExperienceSection() {
               />
             ))}
           </ExperienceColumn>
-        </Stagger>
+        </div>
       </FadeIn>
     </ScrollSection>
   );

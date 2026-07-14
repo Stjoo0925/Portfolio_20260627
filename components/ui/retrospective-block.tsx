@@ -71,13 +71,7 @@ export function RetrospectiveBlock({
             </div>
           )}
         </div>
-      ) : (
-        <p className="retrospective-empty">
-          프로젝트 회고를 작성해 주세요. JSON의{" "}
-          <code>retrospective</code> 필드에 내용을
-          추가하면 여기에 표시됩니다.
-        </p>
-      )}
+      ) : null}
     </div>
   );
 }

@@ -30,7 +30,7 @@ export function LabSection() {
 
   return (
     <>
-      <ScrollSection id="lab" align="start">
+      <ScrollSection id="lab" align="center">
         <FadeIn className="route-section-frame">
           <SectionHeader title={data.title} lede={data.intro} />
 
