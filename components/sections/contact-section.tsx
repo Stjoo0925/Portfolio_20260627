@@ -1,6 +1,7 @@
 import { FadeIn } from "@/components/motion/fade-in";
-import { ScrollSection } from "@/components/ui/scroll-section";
 import { Icon } from "@/components/ui/icon";
+import { ScrollSection } from "@/components/ui/scroll-section";
+import { SectionHeader } from "@/components/ui/section-header";
 import { loadContact } from "@/lib/content/load";
 
 export function ContactSection() {
@@ -8,10 +9,8 @@ export function ContactSection() {
 
   return (
     <ScrollSection id="contact" align="start" snap={false}>
-      <FadeIn className="route-section-frame editorial-page contact-editorial">
-        <header className="editorial-masthead">
-          <h2>{contact.title}</h2>
-        </header>
+      <FadeIn className="route-section-frame editorial-page contact-editorial editorial-compact">
+        <SectionHeader title={contact.title} />
         <div className="contact-editorial__lead">
           <p>{contact.body}</p>
           <a href={`mailto:${contact.email}`} className="contact-editorial__email">

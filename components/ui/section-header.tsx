@@ -15,7 +15,10 @@ export function SectionHeader({
   titleClassName,
 }: SectionHeaderProps) {
   return (
-    <header className={cn("section-header", className)}>
+    <header
+      className={cn("section-header", className)}
+      data-has-lede={lede ? "true" : undefined}
+    >
       <span className="section-header-rule" data-reveal="line" aria-hidden />
       <h2
         className={cn(

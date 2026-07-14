@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Badge } from "@astryxdesign/core/Badge";
 import { FadeIn } from "@/components/motion/fade-in";
 import { Stagger, StaggerItem } from "@/components/motion/stagger";
 import { ProjectDetailPanel } from "@/components/ui/project-modal";
@@ -10,8 +9,6 @@ import { SectionHeader } from "@/components/ui/section-header";
 import { WorkCard } from "@/components/ui/work-card";
 import { loadProjects } from "@/lib/content/load";
 import type { Project } from "@/lib/content/schema";
-import { UNIFORM_BENTO_GRID_CLASS } from "@/lib/ui/bento-grid";
-import { cn } from "@/lib/utils";
 
 export function ProjectsSection() {
   const data = loadProjects();
@@ -19,13 +16,13 @@ export function ProjectsSection() {
 
   return (
     <>
-      <ScrollSection id="projects" align="center">
-        <FadeIn className="route-section-frame">
+      <ScrollSection id="projects" align="start" snap={false}>
+        <FadeIn className="route-section-frame editorial-page editorial-compact">
           <SectionHeader title={data.title} lede={data.intro} />
 
-          <Stagger className={cn(UNIFORM_BENTO_GRID_CLASS, "route-section-grid")}>
+          <Stagger className="work-index">
             {data.projects.map((p) => (
-              <StaggerItem key={p.id} className="route-bento-item">
+              <StaggerItem key={p.id}>
                 <WorkCard
                   type={p.type}
                   title={p.title}
@@ -35,26 +32,10 @@ export function ProjectsSection() {
                   onClick={() =>
                     setSelected((prev) => (prev?.id === p.id ? null : p))
                   }
-                  badge={
-                    p.featured ? (
-                      <Badge
-                        className="portfolio-badge"
-                        label="Featured"
-                        variant="yellow"
-                      />
-                    ) : undefined
-                  }
-                  meta={
-                    <>
-                      {p.period.start} — {p.period.end}
-                      {p.period.duration ? ` (${p.period.duration})` : ""}
-                    </>
-                  }
-                  signal={
-                    p.period.ongoing ? (
-                      <span className="route-status">진행중</span>
-                    ) : undefined
-                  }
+                  meta={`${p.period.start} — ${p.period.end}${
+                    p.period.duration ? ` (${p.period.duration})` : ""
+                  }`}
+                  status={p.featured ? "Featured" : p.period.ongoing ? "진행중" : undefined}
                 />
               </StaggerItem>
             ))}

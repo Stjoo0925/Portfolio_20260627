@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Badge } from "@astryxdesign/core/Badge";
 import { FadeIn } from "@/components/motion/fade-in";
 import { Stagger, StaggerItem } from "@/components/motion/stagger";
 import { LabDetailPanel } from "@/components/ui/lab-detail-panel";
@@ -10,8 +9,6 @@ import { SectionHeader } from "@/components/ui/section-header";
 import { WorkCard } from "@/components/ui/work-card";
 import { loadLab } from "@/lib/content/load";
 import type { LabProject } from "@/lib/content/schema";
-import { UNIFORM_BENTO_GRID_CLASS } from "@/lib/ui/bento-grid";
-import { cn } from "@/lib/utils";
 
 function hasRetrospective(project: LabProject) {
   const r = project.retrospective;
@@ -30,13 +27,13 @@ export function LabSection() {
 
   return (
     <>
-      <ScrollSection id="lab" align="center">
-        <FadeIn className="route-section-frame">
+      <ScrollSection id="lab" align="start" snap={false}>
+        <FadeIn className="route-section-frame editorial-page editorial-compact">
           <SectionHeader title={data.title} lede={data.intro} />
 
-          <Stagger className={cn(UNIFORM_BENTO_GRID_CLASS, "route-section-grid")}>
+          <Stagger className="work-index">
             {data.projects.map((p) => (
-              <StaggerItem key={p.id} className="route-bento-item">
+              <StaggerItem key={p.id}>
                 <WorkCard
                   type={p.type}
                   title={p.title}
@@ -46,23 +43,12 @@ export function LabSection() {
                   onClick={() =>
                     setSelected((prev) => (prev?.id === p.id ? null : p))
                   }
-                  badge={
-                    p.version ? (
-                      <Badge
-                        className="portfolio-badge"
-                        label={`v${p.version}`}
-                        variant="cyan"
-                      />
-                    ) : undefined
-                  }
-                  signal={
-                    hasRetrospective(p) ? (
-                      <span
-                        className="lab-signal-dot"
-                        title="회고 작성됨"
-                        aria-label="회고 작성됨"
-                      />
-                    ) : undefined
+                  status={
+                    p.version
+                      ? `v${p.version}`
+                      : hasRetrospective(p)
+                        ? "Retrospective"
+                        : undefined
                   }
                 />
               </StaggerItem>

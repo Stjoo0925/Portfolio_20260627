@@ -1,5 +1,6 @@
 import { FadeIn } from "@/components/motion/fade-in";
 import { ScrollSection } from "@/components/ui/scroll-section";
+import { SectionHeader } from "@/components/ui/section-header";
 import { loadExperience } from "@/lib/content/load";
 
 function ExperienceColumn({
@@ -51,10 +52,8 @@ export function ExperienceSection() {
 
   return (
     <ScrollSection id="experience" align="start" snap={false}>
-      <FadeIn className="route-section-frame editorial-page career-editorial">
-        <header className="editorial-masthead">
-          <h2>{exp.title}</h2>
-        </header>
+      <FadeIn className="route-section-frame editorial-page career-editorial editorial-compact">
+        <SectionHeader title={exp.title} />
         <div className="career-editorial__grid">
           <ExperienceColumn title="Career">
             {exp.career.map((item) => (
