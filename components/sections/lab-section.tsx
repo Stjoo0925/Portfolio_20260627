@@ -29,12 +29,13 @@ export function LabSection() {
     <>
       <ScrollSection id="lab" align="start" snap={false}>
         <FadeIn className="route-section-frame editorial-page editorial-compact">
-          <SectionHeader title={data.title} lede={data.intro} />
+          <SectionHeader label="EXPERIMENTS" title={data.title} lede={data.intro} />
 
           <Stagger className="work-index">
             {data.projects.map((p) => (
               <StaggerItem key={p.id}>
                 <WorkCard
+                  kindLabel="LAB"
                   type={p.type}
                   title={p.title}
                   summary={p.summary}

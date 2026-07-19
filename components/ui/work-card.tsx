@@ -1,6 +1,7 @@
 "use client";
 
 type WorkCardProps = {
+  kindLabel: "PROJECT" | "LAB";
   type: string;
   title: string;
   summary: string;
@@ -12,6 +13,7 @@ type WorkCardProps = {
 };
 
 export function WorkCard({
+  kindLabel,
   type,
   title,
   summary,
@@ -30,6 +32,7 @@ export function WorkCard({
       aria-expanded={selected}
     >
       <div className="work-row__identity">
+        <span className="work-row__field-label">{kindLabel}</span>
         <div className="work-row__eyeline">
           <span>{type}</span>
           {status ? <span>{status}</span> : null}
@@ -38,9 +41,20 @@ export function WorkCard({
       </div>
 
       <div className="work-row__details">
-        {meta ? <p className="work-row__meta">{meta}</p> : null}
-        <p className="work-row__summary">{summary}</p>
-        <p className="work-row__tags">{tags.join(" · ")}</p>
+        {meta ? (
+          <div>
+            <span className="work-row__field-label">PERIOD</span>
+            <p className="work-row__meta">{meta}</p>
+          </div>
+        ) : null}
+        <div>
+          <span className="work-row__field-label">SUMMARY</span>
+          <p className="work-row__summary">{summary}</p>
+        </div>
+        <div>
+          <span className="work-row__field-label">STACK</span>
+          <p className="work-row__tags">{tags.join(" · ")}</p>
+        </div>
       </div>
 
       <span className="work-row__action" aria-hidden="true">

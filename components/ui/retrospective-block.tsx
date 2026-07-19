@@ -44,9 +44,7 @@ export function RetrospectiveBlock({
 
   return (
     <div className="retrospective-card">
-      <h3 className="detail-heading">
-        회고
-      </h3>
+      <h3 className="detail-heading">REVIEW</h3>
 
       {filled ? (
         <div className="retrospective-content">
@@ -55,16 +53,14 @@ export function RetrospectiveBlock({
               {retrospective.overview}
             </p>
           )}
-          <ListSection title="배운 점" items={retrospective.learnings ?? []} />
+          <ListSection title="LEARNINGS" items={retrospective.learnings ?? []} />
           <ListSection
-            title="어려웠던 점"
+            title="CHALLENGES"
             items={retrospective.challenges ?? []}
           />
           {retrospective.nextSteps?.trim() && (
             <div>
-              <h4 className="retrospective-subheading">
-                다음에 개선할 점
-              </h4>
+              <h4 className="retrospective-subheading">NEXT</h4>
               <p className="retrospective-copy">
                 {retrospective.nextSteps}
               </p>

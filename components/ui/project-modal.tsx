@@ -40,30 +40,32 @@ export function ProjectDetailPanel({
         </div>
       </dl>
 
-      <p className="detail-description">
-        {project.description}
-      </p>
+      <section className="detail-section detail-section--first">
+        <h3 className="detail-heading">OVERVIEW</h3>
+        <p className="detail-description">{project.description}</p>
+      </section>
 
-      <div className="detail-section">
-        <h3 className="detail-heading">
-          주요 역할
-        </h3>
-        <p className="detail-copy">
-          {project.role}
-        </p>
-      </div>
+      <section className="detail-section">
+        <h3 className="detail-heading">ROLE</h3>
+        <p className="detail-copy">{project.role}</p>
+      </section>
 
-      <ul className="detail-tag-list">
-        {project.tags.map((tag) => (
-          <li key={tag} className="max-w-full">
-            <TagChip>{tag}</TagChip>
-          </li>
-        ))}
-      </ul>
+      <section className="detail-section">
+        <h3 className="detail-heading">STACK</h3>
+        <ul className="detail-tag-list">
+          {project.tags.map((tag) => (
+            <li key={tag} className="max-w-full">
+              <TagChip>{tag}</TagChip>
+            </li>
+          ))}
+        </ul>
+      </section>
 
       <RetrospectiveBlock retrospective={project.retrospective ?? {}} />
 
-      <div className="detail-link-list">
+      <section className="detail-section detail-links-section">
+        <h3 className="detail-heading">LINKS</h3>
+        <div className="detail-link-list">
         {project.links.github && (
           <a
             href={project.links.github}
@@ -97,7 +99,8 @@ export function ProjectDetailPanel({
             <span className="text-readable-en">상세 보기</span>
           </a>
         )}
-      </div>
+        </div>
+      </section>
     </DetailPanelShell>
   );
 }

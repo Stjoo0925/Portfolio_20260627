@@ -18,12 +18,13 @@ export function ProjectsSection() {
     <>
       <ScrollSection id="projects" align="start" snap={false}>
         <FadeIn className="route-section-frame editorial-page editorial-compact">
-          <SectionHeader title={data.title} lede={data.intro} />
+          <SectionHeader label="SELECTED WORK" title={data.title} lede={data.intro} />
 
           <Stagger className="work-index">
             {data.projects.map((p) => (
               <StaggerItem key={p.id}>
                 <WorkCard
+                  kindLabel="PROJECT"
                   type={p.type}
                   title={p.title}
                   summary={p.summary}

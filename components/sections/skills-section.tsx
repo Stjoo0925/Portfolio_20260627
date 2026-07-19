@@ -10,13 +10,19 @@ export function SkillsSection() {
     <ScrollSection id="skills" align="start" snap={false}>
       <FadeIn className="route-section-frame editorial-page skills-editorial editorial-compact">
         <SectionHeader
+          label="CAPABILITIES"
           title={skills.title}
           lede="제품을 설계하고 구현하고 운영하기 위해 사용하는 기술입니다."
         />
         <ol className="skills-editorial__list">
-          {skills.categories.map((cat) => (
+          {skills.categories.map((cat, index) => (
             <li key={cat.name}>
-              <h3>{cat.name}</h3>
+              <div className="skills-editorial__identity">
+                <span className="skills-editorial__number">
+                  {String(index + 1).padStart(2, "0")} / CATEGORY
+                </span>
+                <h2>{cat.name}</h2>
+              </div>
               <p>{cat.items.join(" · ")}</p>
             </li>
           ))}

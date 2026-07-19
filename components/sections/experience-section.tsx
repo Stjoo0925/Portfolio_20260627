@@ -53,7 +53,11 @@ export function ExperienceSection() {
   return (
     <ScrollSection id="experience" align="start" snap={false}>
       <FadeIn className="route-section-frame editorial-page career-editorial editorial-compact">
-        <SectionHeader title={exp.title} />
+        <SectionHeader
+          label="EXPERIENCE"
+          title={exp.title}
+          lede="경력, 교육, 훈련을 통해 쌓아온 실무 기반입니다."
+        />
         <div className="career-editorial__grid">
           <ExperienceColumn title="Career">
             {exp.career.map((item) => (

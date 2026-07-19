@@ -18,13 +18,21 @@ export function GalaxyIntro({ name, hero }: { name: string; hero: Hero }) {
   const visible = phase === "exploring";
 
   return (
-    <div className="galaxy-intro" data-visible={visible ? "true" : "false"}>
+    <div className="galaxy-intro hierarchy-home" data-visible={visible ? "true" : "false"}>
       <p className="galaxy-intro__eyebrow">{hero.greeting}</p>
       <h1 className="galaxy-intro__name">{name.toUpperCase()}</h1>
-      <p className="galaxy-intro__role">
-        <RoleCycle roles={hero.roles} />
-      </p>
-      <p className="galaxy-intro__tagline">{hero.tagline}</p>
+      <div className="hierarchy-home__meta">
+        <div>
+          <span className="hierarchy-label">ROLE</span>
+          <p className="galaxy-intro__role">
+            <RoleCycle roles={hero.roles} />
+          </p>
+        </div>
+        <div>
+          <span className="hierarchy-label">FOCUS</span>
+          <p className="galaxy-intro__tagline">{hero.tagline}</p>
+        </div>
+      </div>
 
       {!webglAvailable && (
         <nav className="galaxy-intro__fallback" aria-label="Portfolio sections">

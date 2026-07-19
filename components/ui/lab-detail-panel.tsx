@@ -24,14 +24,13 @@ export function LabDetailPanel({
       badge={badge}
       onClose={onClose}
     >
-      <p className="detail-description">
-        {project.description}
-      </p>
+      <section className="detail-section detail-section--first">
+        <h3 className="detail-heading">OVERVIEW</h3>
+        <p className="detail-description">{project.description}</p>
+      </section>
 
-      <div className="detail-section">
-        <h3 className="detail-heading">
-          주요 특징
-        </h3>
+      <section className="detail-section">
+        <h3 className="detail-heading">FEATURES</h3>
         <ul className="detail-bullet-list">
           {project.highlights.map((item) => (
             <li
@@ -42,19 +41,24 @@ export function LabDetailPanel({
             </li>
           ))}
         </ul>
-      </div>
+      </section>
 
-      <ul className="detail-tag-list">
-        {project.tags.map((tag) => (
-          <li key={tag} className="max-w-full">
-            <TagChip>{tag}</TagChip>
-          </li>
-        ))}
-      </ul>
+      <section className="detail-section">
+        <h3 className="detail-heading">STACK</h3>
+        <ul className="detail-tag-list">
+          {project.tags.map((tag) => (
+            <li key={tag} className="max-w-full">
+              <TagChip>{tag}</TagChip>
+            </li>
+          ))}
+        </ul>
+      </section>
 
       <RetrospectiveBlock retrospective={project.retrospective ?? {}} />
 
-      <div className="detail-link-list">
+      <section className="detail-section detail-links-section">
+        <h3 className="detail-heading">LINKS</h3>
+        <div className="detail-link-list">
         {project.links.github && (
           <a
             href={project.links.github}
@@ -77,7 +81,8 @@ export function LabDetailPanel({
             <span className="text-readable-en">Demo</span>
           </a>
         )}
-      </div>
+        </div>
+      </section>
     </DetailPanelShell>
   );
 }
