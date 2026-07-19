@@ -2862,6 +2862,41 @@ html {
     transform: scaleX(1);
   }
 
+  /* Warp-inertia arrival: the page container carries the fly-in's forward
+     momentum — slightly oversized and motion-blurred, decelerating into
+     place while the child reveals assemble on top */
+  .route-section-frame[data-reveal] {
+    transform: scale3d(1.05, 1.05, 1) translateY(16px);
+    transform-origin: 50% 28%;
+    filter: blur(14px);
+    transition:
+      opacity 0.6s var(--ease-out-expo) var(--reveal-delay, 0ms),
+      transform 1s var(--ease-out-expo) var(--reveal-delay, 0ms),
+      filter 0.85s var(--ease-out-expo) var(--reveal-delay, 0ms);
+  }
+
+  .route-section-frame[data-reveal][data-inview="true"] {
+    transform: none;
+    filter: none;
+  }
+
+  /* Section titles materialize: wide-tracked stardust condensing into type
+     (settles to the serif display tracking defined on .section-header-title) */
+  .section-header-title[data-reveal] {
+    letter-spacing: 0.12em;
+    filter: blur(9px);
+    transition:
+      opacity 0.7s var(--ease-out-expo) var(--reveal-delay, 0ms),
+      transform 0.7s var(--ease-out-expo) var(--reveal-delay, 0ms),
+      filter 0.8s var(--ease-out-expo) var(--reveal-delay, 0ms),
+      letter-spacing 1.15s var(--ease-out-expo) var(--reveal-delay, 0ms);
+  }
+
+  .section-header-title[data-reveal][data-inview="true"] {
+    letter-spacing: -0.055em;
+    filter: none;
+  }
+
   /* Staggered waterfall for grouped children */
   [data-reveal-group] > * {
     opacity: 0;
@@ -3192,12 +3227,44 @@ html {
 
 .galaxy-transition-overlay[data-phase="focusing"] {
   opacity: 1;
-  transition: opacity 0.55s var(--ease-out-expo) 0.85s;
+  transition: opacity 0.55s var(--ease-out-expo) var(--overlay-delay, 0.85s);
 }
 
 .galaxy-transition-overlay[data-phase="project"] {
   opacity: 0;
   transition: opacity 0.65s var(--ease-out-expo) 0.05s;
+}
+
+/* Accent-tinted flash at the warp climax, just as the overlay covers the
+   expanded sphere — the "light at the end of the tunnel" beat */
+.galaxy-transition-overlay::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at 50% 50%,
+    var(--flash-accent, #f4f4f7) 0%,
+    transparent 62%
+  );
+  opacity: 0;
+}
+
+.galaxy-transition-overlay[data-phase="focusing"]::before {
+  animation: warp-flash 0.55s var(--ease-out-expo) var(--flash-delay, 0.9s) both;
+}
+
+@keyframes warp-flash {
+  0% {
+    opacity: 0;
+  }
+
+  38% {
+    opacity: 0.55;
+  }
+
+  100% {
+    opacity: 0;
+  }
 }
 
 .node-label {
@@ -3296,6 +3363,50 @@ html {
   line-height: 1.75;
   word-break: keep-all;
   overflow-wrap: break-word;
+}
+
+/* Identity text materializes out of stardust when the galaxy settles:
+   staggered blur + tracking condense, echoing the opening's convergence */
+@media (prefers-reduced-motion: no-preference) {
+  .galaxy-intro__eyebrow,
+  .galaxy-intro__name,
+  .galaxy-intro__role,
+  .galaxy-intro__tagline {
+    transition:
+      opacity 0.75s var(--ease-out-expo),
+      transform 0.75s var(--ease-out-expo),
+      filter 0.85s var(--ease-out-expo),
+      letter-spacing 1.2s var(--ease-out-expo);
+  }
+
+  .galaxy-intro[data-visible="false"] .galaxy-intro__eyebrow,
+  .galaxy-intro[data-visible="false"] .galaxy-intro__name,
+  .galaxy-intro[data-visible="false"] .galaxy-intro__role,
+  .galaxy-intro[data-visible="false"] .galaxy-intro__tagline {
+    opacity: 0;
+    transform: translateY(12px);
+    filter: blur(10px);
+  }
+
+  .galaxy-intro[data-visible="false"] .galaxy-intro__name {
+    letter-spacing: 0.24em;
+  }
+
+  .galaxy-intro[data-visible="true"] .galaxy-intro__eyebrow {
+    transition-delay: 0ms;
+  }
+
+  .galaxy-intro[data-visible="true"] .galaxy-intro__name {
+    transition-delay: 120ms;
+  }
+
+  .galaxy-intro[data-visible="true"] .galaxy-intro__role {
+    transition-delay: 340ms;
+  }
+
+  .galaxy-intro[data-visible="true"] .galaxy-intro__tagline {
+    transition-delay: 480ms;
+  }
 }
 
 .galaxy-intro__fallback {

@@ -5,8 +5,6 @@ import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { nodeById } from "@/lib/galaxy/nodes";
 import {
-  FOCUS_MS,
-  RETURN_MS,
   clamp01,
   easeInOutCubic,
   useGalaxyStore,
@@ -14,6 +12,9 @@ import {
 
 const BASE_POSITION = new THREE.Vector3(0, 1.2, 26);
 const BASE_LOOK = new THREE.Vector3(0, 0.5, -6);
+/** Opening vantage: higher and further out, drifting down into the idle view. */
+const FORMING_POSITION = new THREE.Vector3(0, 5.6, 39);
+const FORMING_LOOK = new THREE.Vector3(0, 2.2, -6);
 
 /**
  * Controlled exploration camera: near-imperceptible idle drift, light pointer
@@ -94,7 +95,7 @@ export function CameraRig() {
   }, [gl]);
 
   useFrame((state, delta) => {
-    const { phase, phaseStart, selectedId, reducedMotion } =
+    const { phase, phaseStart, selectedId, reducedMotion, formingMs, focusMs, returnMs } =
       useGalaxyStore.getState();
     const r = rig.current;
     const camera = state.camera;
@@ -121,6 +122,17 @@ export function CameraRig() {
     }
 
     const damp = 1 - Math.exp(-delta * 2.4);
+
+    if (phase === "forming") {
+      // Opening dolly: ease from the elevated vantage down into the exact
+      // idle drift target so the exploring hand-off is seamless
+      r.capturedPhase = "forming";
+      const p = easeInOutCubic(clamp01((now - phaseStart) / formingMs));
+      camera.position.lerpVectors(FORMING_POSITION, scratch.desired, p);
+      r.look.lerpVectors(FORMING_LOOK, scratch.desiredLook, p);
+      camera.lookAt(r.look);
+      return;
+    }
 
     if (phase === "exploring") {
       r.capturedPhase = "";
@@ -152,17 +164,26 @@ export function CameraRig() {
           .normalize()
           .multiplyScalar(2.4)
           .add(scratch.nodeCenter);
-        const p = easeInOutCubic(clamp01((now - phaseStart) / FOCUS_MS));
+        const p = easeInOutCubic(clamp01((now - phaseStart) / focusMs));
         camera.position.lerpVectors(r.savedPos, scratch.focusEnd, p);
         r.look.lerpVectors(r.savedLook, scratch.nodeCenter, Math.min(1, p * 1.6));
       }
     } else if (phase === "returning") {
       if (r.capturedPhase !== "returning") {
         r.capturedPhase = "returning";
-        r.returnFromPos.copy(camera.position);
-        r.returnFromLook.copy(r.look);
+        // Reverse warp: start pressed toward the node we came out of and pull
+        // back out to the idle vantage (the un-dim fade masks the initial cut)
+        const node = selectedId ? nodeById.get(selectedId) : null;
+        if (node) {
+          scratch.nodeCenter.set(...node.position);
+          r.returnFromPos.copy(scratch.desired).lerp(scratch.nodeCenter, 0.55);
+          r.returnFromLook.copy(scratch.nodeCenter);
+        } else {
+          r.returnFromPos.copy(camera.position);
+          r.returnFromLook.copy(r.look);
+        }
       }
-      const p = easeInOutCubic(clamp01((now - phaseStart) / RETURN_MS));
+      const p = easeInOutCubic(clamp01((now - phaseStart) / returnMs));
       camera.position.lerpVectors(r.returnFromPos, scratch.desired, p);
       r.look.lerpVectors(r.returnFromLook, scratch.desiredLook, p);
     } else if (phase === "project") {
@@ -174,6 +195,21 @@ export function CameraRig() {
     }
 
     camera.lookAt(r.look);
+
+    // Warp FOV kick: widen through the fly-in, relax back on return/idle
+    const cam = camera as THREE.PerspectiveCamera;
+    let targetFov = 55;
+    if (phase === "focusing") {
+      const p = clamp01((now - phaseStart) / focusMs);
+      targetFov = 55 + 26 * p * p;
+    } else if (phase === "returning") {
+      const p = clamp01((now - phaseStart) / returnMs);
+      targetFov = 55 + 22 * (1 - p) * (1 - p);
+    }
+    if (Math.abs(cam.fov - targetFov) > 0.02) {
+      cam.fov += (targetFov - cam.fov) * Math.min(1, delta * 10);
+      cam.updateProjectionMatrix();
+    }
   });
 
   return null;

@@ -9,7 +9,7 @@ import * as THREE from "three";
 import { buildConnectionCurves } from "@/lib/galaxy/curves";
 import { galaxyNodes } from "@/lib/galaxy/nodes";
 import { buildSupportingNodes } from "@/lib/galaxy/supporting-nodes";
-import { useGalaxyStore } from "@/store/galaxy-store";
+import { clamp01, useGalaxyStore } from "@/store/galaxy-store";
 
 function buildAmbientGraph(count: number) {
   const support = buildSupportingNodes(count);
@@ -103,10 +103,43 @@ export function ConnectionLines() {
   const ambientGraph = useMemo(() => buildAmbientGraph(supportCount), [supportCount]);
 
   const groupRef = useRef<THREE.Group>(null);
+  const formingApplied = useRef(false);
 
   useFrame((_, delta) => {
-    const { hoveredId, focusedId, selectedId, phase } = useGalaxyStore.getState();
+    const { hoveredId, focusedId, selectedId, phase, phaseStart, formingMs } =
+      useGalaxyStore.getState();
     if (phase === "project") return;
+
+    // Opening: main paths draw on point by point like a circuit powering up,
+    // while ambient graph segments pop in progressively.
+    if (phase === "forming") {
+      formingApplied.current = true;
+      const formP = clamp01((performance.now() - phaseStart) / formingMs);
+
+      lines.forEach((entry, index) => {
+        const p = clamp01((formP - (0.6 + (index % 5) * 0.05)) / 0.22);
+        const vertexCount = entry.line.geometry.getAttribute("position").count;
+        entry.line.geometry.setDrawRange(0, Math.floor(p * vertexCount));
+        entry.material.opacity = 0.13 * Math.min(1, p * 1.6);
+      });
+
+      const ambientP = clamp01((formP - 0.52) / 0.36);
+      const ambientAttr = ambientGraph.geometry.getAttribute("position");
+      // LineSegments draw pairs; keep the count even
+      const ambientVisible = Math.floor((ambientP * ambientAttr.count) / 2) * 2;
+      ambientGraph.geometry.setDrawRange(0, ambientVisible);
+      (ambientGraph.material as THREE.LineBasicMaterial).opacity =
+        0.075 * Math.min(1, ambientP * 1.4);
+      return;
+    }
+
+    if (formingApplied.current) {
+      formingApplied.current = false;
+      lines.forEach((entry) => entry.line.geometry.setDrawRange(0, Infinity));
+      ambientGraph.geometry.setDrawRange(0, Infinity);
+      (ambientGraph.material as THREE.LineBasicMaterial).opacity = 0.075;
+    }
+
     const activeId = selectedId ?? hoveredId ?? focusedId;
     const damp = 1 - Math.exp(-delta * 7);
 

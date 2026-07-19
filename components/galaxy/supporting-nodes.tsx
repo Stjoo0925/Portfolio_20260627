@@ -4,7 +4,11 @@ import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { buildSupportingNodes } from "@/lib/galaxy/supporting-nodes";
-import { useGalaxyStore } from "@/store/galaxy-store";
+import {
+  clamp01,
+  easeOutExpo,
+  useGalaxyStore,
+} from "@/store/galaxy-store";
 
 /** Medium silver spheres — atmosphere between the star dust and main nodes. */
 export function SupportingNodes() {
@@ -19,14 +23,26 @@ export function SupportingNodes() {
   useFrame((state) => {
     const mesh = meshRef.current;
     if (!mesh) return;
-    if (useGalaxyStore.getState().phase === "project") return;
+    const { phase, phaseStart, formingMs } = useGalaxyStore.getState();
+    if (phase === "project") return;
+
+    // Opening: spheres condense in a staggered wave after the star infall
+    let formP = 1;
+    if (phase === "forming") {
+      formP = clamp01((performance.now() - phaseStart) / formingMs);
+    }
 
     const t = state.clock.elapsedTime;
     instances.forEach((instance, i) => {
       dummy.position.set(...instance.position);
       dummy.position.y += Math.sin(t * 0.24 + instance.floatPhase) * instance.floatAmp;
       dummy.position.x += Math.cos(t * 0.18 + instance.floatPhase * 1.7) * instance.floatAmp * 0.4;
-      dummy.scale.setScalar(instance.scale);
+      let scale = instance.scale;
+      if (formP < 1) {
+        const stagger = instance.floatPhase / (Math.PI * 2);
+        scale *= easeOutExpo(clamp01((formP - (0.42 + stagger * 0.34)) / 0.24));
+      }
+      dummy.scale.setScalar(Math.max(0.0001, scale));
       dummy.updateMatrix();
       mesh.setMatrixAt(i, dummy.matrix);
     });

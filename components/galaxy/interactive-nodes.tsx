@@ -10,7 +10,6 @@ import * as THREE from "three";
 import { galaxyNodes, type GalaxyNode } from "@/lib/galaxy/nodes";
 import {
   CONVERGE_MS,
-  FOCUS_MS,
   clamp01,
   easeOutExpo,
   useGalaxyStore,
@@ -122,9 +121,43 @@ function InteractiveNode({ node }: { node: GalaxyNode }) {
     const material = materialRef.current;
     if (!group || !material) return;
 
-    const { phase, phaseStart, hoveredId, focusedId, selectedId } =
-      useGalaxyStore.getState();
+    const {
+      phase,
+      phaseStart,
+      hoveredId,
+      focusedId,
+      selectedId,
+      formingMs,
+      focusMs,
+    } = useGalaxyStore.getState();
     const now = performance.now();
+
+    // Opening: the node condenses out of the infalling stars — scale-up from
+    // nothing with a bright birth flash that decays into the idle look.
+    if (phase === "forming") {
+      const formP = clamp01((now - phaseStart) / formingMs);
+      const order = galaxyNodes.findIndex((n) => n.id === node.id);
+      const p = clamp01((formP - (0.5 + order * 0.055)) / 0.24);
+      const e = easeOutExpo(p);
+      const flash = Math.sin(Math.min(1, p * 1.2) * Math.PI);
+
+      group.position.set(node.position[0], node.position[1], node.position[2]);
+      group.scale.setScalar(Math.max(0.0001, e));
+      material.opacity = e;
+      material.color.copy(baseColor).lerp(brightColor, flash);
+      material.emissive.copy(accentColor);
+      material.emissiveIntensity = 0.11 + flash * 1.5;
+      shellMaterial.uniforms.uIntensity.value = 0.32 * e + flash * 0.9;
+
+      if (glowRef.current) {
+        const spriteMaterial = glowRef.current.material as THREE.SpriteMaterial;
+        spriteMaterial.opacity = 0.14 * e + flash * 0.5;
+      }
+      if (ringMaterialRef.current) ringMaterialRef.current.opacity = 0;
+      if (shockRef.current) shockRef.current.visible = false;
+      if (labelRef.current) labelRef.current.dataset.visible = "false";
+      return;
+    }
     const isActive = hoveredId === node.id || focusedId === node.id;
     const isSelected = selectedId === node.id;
     const inTransition =
@@ -143,7 +176,7 @@ function InteractiveNode({ node }: { node: GalaxyNode }) {
     // then quietly deflates behind the opened page (the overlay hides the cut)
     const targetScale = isActive ? 1.05 : 1;
     if (isSelected && phase === "focusing") {
-      const p = easeOutExpo(clamp01((now - phaseStart) / FOCUS_MS));
+      const p = easeOutExpo(clamp01((now - phaseStart) / focusMs));
       group.scale.setScalar(1 + (EXPAND_RADIUS / node.radius - 1) * p);
     } else if (phase === "project") {
       // The route enters under an opaque overlay. Reset here so the enlarged

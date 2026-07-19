@@ -4,6 +4,8 @@ import { create } from "zustand";
 
 /**
  * Scene phases:
+ * - forming:    opening sequence — scattered stars fall into the spiral,
+ *               nodes condense, lines draw on (once per session)
  * - exploring:  idle galaxy, free camera drift
  * - converging: electrons rush toward the selected node (pre-flight)
  * - focusing:   camera travels into the node, sphere expands to fill the view
@@ -11,6 +13,7 @@ import { create } from "zustand";
  * - returning:  camera flies back to its saved position
  */
 export type GalaxyPhase =
+  | "forming"
   | "exploring"
   | "converging"
   | "focusing"
@@ -20,6 +23,32 @@ export type GalaxyPhase =
 export const CONVERGE_MS = 550;
 export const FOCUS_MS = 1500;
 export const RETURN_MS = 1300;
+export const FORMING_MS = 3200;
+/** Abbreviated opening on low-power devices. */
+export const FORMING_MS_LOW = 1800;
+
+export function formingDuration(perfLevel: "high" | "low") {
+  return perfLevel === "low" ? FORMING_MS_LOW : FORMING_MS;
+}
+
+const OPENING_SEEN_KEY = "galaxy-opening-seen";
+
+/** The opening plays once per browser session; storage errors skip it. */
+export function hasSeenOpening() {
+  try {
+    return sessionStorage.getItem(OPENING_SEEN_KEY) === "1";
+  } catch {
+    return true;
+  }
+}
+
+export function markOpeningSeen() {
+  try {
+    sessionStorage.setItem(OPENING_SEEN_KEY, "1");
+  } catch {
+    // best effort — a blocked sessionStorage just skips the replay gate
+  }
+}
 
 type GalaxyStore = {
   phase: GalaxyPhase;
@@ -33,6 +62,15 @@ type GalaxyStore = {
   reducedMotion: boolean;
   perfLevel: "high" | "low";
   webglAvailable: boolean;
+  /** True once the WebGL canvas has been created and can actually render. */
+  canvasReady: boolean;
+  /** Active opening duration; set when forming is triggered (perf-dependent,
+   *  dev-overridable via ?formingMs= for tuning/verification). */
+  formingMs: number;
+  /** Warp fly-in duration (dev-overridable via ?focusMs=). */
+  focusMs: number;
+  /** Reverse-warp return duration (dev-overridable via ?returnMs=). */
+  returnMs: number;
 
   setPhase: (phase: GalaxyPhase) => void;
   setHovered: (id: string | null) => void;
@@ -41,6 +79,10 @@ type GalaxyStore = {
   setReducedMotion: (value: boolean) => void;
   setPerfLevel: (value: "high" | "low") => void;
   setWebglAvailable: (value: boolean) => void;
+  setCanvasReady: (value: boolean) => void;
+  setFormingMs: (value: number) => void;
+  setFocusMs: (value: number) => void;
+  setReturnMs: (value: number) => void;
 };
 
 export const useGalaxyStore = create<GalaxyStore>((set) => ({
@@ -52,6 +94,10 @@ export const useGalaxyStore = create<GalaxyStore>((set) => ({
   reducedMotion: false,
   perfLevel: "high",
   webglAvailable: true,
+  canvasReady: false,
+  formingMs: FORMING_MS,
+  focusMs: FOCUS_MS,
+  returnMs: RETURN_MS,
 
   setPhase: (phase) =>
     set({
@@ -64,6 +110,10 @@ export const useGalaxyStore = create<GalaxyStore>((set) => ({
   setReducedMotion: (reducedMotion) => set({ reducedMotion }),
   setPerfLevel: (perfLevel) => set({ perfLevel }),
   setWebglAvailable: (webglAvailable) => set({ webglAvailable }),
+  setCanvasReady: (canvasReady) => set({ canvasReady }),
+  setFormingMs: (formingMs) => set({ formingMs }),
+  setFocusMs: (focusMs) => set({ focusMs }),
+  setReturnMs: (returnMs) => set({ returnMs }),
 }));
 
 /** Ease-out expo — matches the CSS [0.16, 1, 0.3, 1] feel closely. */

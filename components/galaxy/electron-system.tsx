@@ -118,11 +118,14 @@ export function ElectronSystem() {
   }, [electronCount]);
 
   const headPos = useMemo(() => new THREE.Vector3(), []);
+  const pointsRef = useRef<THREE.Points>(null);
   const frameCounter = useRef(0);
 
   useFrame((_, delta) => {
     const { phase, hoveredId, focusedId, selectedId } = useGalaxyStore.getState();
-    if (phase === "project") return;
+    // Electron traffic only exists once the galaxy has formed
+    if (pointsRef.current) pointsRef.current.visible = phase !== "forming";
+    if (phase === "project" || phase === "forming") return;
 
     const targetId = selectedId ?? hoveredId ?? focusedId;
     const converging = phase === "converging" || phase === "focusing";
@@ -202,5 +205,7 @@ export function ElectronSystem() {
     positionAttr.needsUpdate = true;
   });
 
-  return <points geometry={geometry} material={material} frustumCulled={false} />;
+  return (
+    <points ref={pointsRef} geometry={geometry} material={material} frustumCulled={false} />
+  );
 }
