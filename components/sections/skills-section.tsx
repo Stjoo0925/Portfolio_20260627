@@ -23,7 +23,13 @@ export function SkillsSection() {
                 </span>
                 <h2>{cat.name}</h2>
               </div>
-              <p>{cat.items.join(" · ")}</p>
+              <div className="skills-editorial__chips" aria-label={`${cat.name} stack`}>
+                {cat.items.map((item) => (
+                  <span className="skills-editorial__chip" key={item}>
+                    {item}
+                  </span>
+                ))}
+              </div>
             </li>
           ))}
         </ol>
