@@ -7,7 +7,7 @@ import { useEffect, useRef } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
-import { nodeById } from "@/lib/galaxy/nodes";
+import { findNodeByPathname, nodeById } from "@/lib/galaxy/nodes";
 import { useGalaxyStore } from "@/store/galaxy-store";
 
 const DEFAULT_RIM_COLOR = new THREE.Color("#b9c7da");
@@ -40,10 +40,15 @@ export function GalaxyEnvironment() {
 
   useFrame((_, delta) => {
     const { phase, selectedId } = useGalaxyStore.getState();
-    const node = selectedId ? nodeById.get(selectedId) : null;
+    const node = selectedId
+      ? nodeById.get(selectedId)
+      : (typeof window !== "undefined" ? findNodeByPathname(window.location.pathname) : null);
 
+    // Keep the accent tint as a hint rather than a full mood change: blend
+    // heavily toward the neutral rim/accent so routes don't read as
+    // arbitrarily different colored rooms.
     if ((phase === "project" || phase === "focusing") && node) {
-      tempTargetColor.set(node.accent);
+      tempTargetColor.set(node.accent).lerp(DEFAULT_RIM_COLOR, 0.7);
     } else {
       tempTargetColor.copy(DEFAULT_RIM_COLOR);
     }
@@ -55,7 +60,7 @@ export function GalaxyEnvironment() {
     }
     if (accentLightRef.current) {
       const targetAccent = (phase === "project" || phase === "focusing") && node
-        ? tempTargetColor
+        ? tempTargetColor.clone().lerp(DEFAULT_ACCENT_COLOR, 0.4)
         : DEFAULT_ACCENT_COLOR;
       accentLightRef.current.color.lerp(targetAccent, lerpSpeed);
     }

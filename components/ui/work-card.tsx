@@ -50,6 +50,7 @@ export function WorkCard({
       onClick={onClick}
       onMouseMove={handleMouseMove}
       className="work-row relative overflow-hidden"
+      data-kind={kindLabel === "LAB" ? "lab" : "project"}
       data-selected={selected ? "true" : undefined}
       aria-expanded={selected}
       whileHover={{ y: -3, scale: 1.01 }}

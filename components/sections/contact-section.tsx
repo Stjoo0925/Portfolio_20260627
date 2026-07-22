@@ -30,6 +30,9 @@ export function ContactSection() {
             </nav>
           </div>
         </footer>
+        {contact.closing ? (
+          <p className="contact-editorial__closing">{contact.closing}</p>
+        ) : null}
       </FadeIn>
     </ScrollSection>
   );

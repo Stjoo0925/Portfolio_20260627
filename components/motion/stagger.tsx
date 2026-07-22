@@ -53,8 +53,6 @@ export function Stagger({
   return (
     <motion.div
       className={className}
-      data-reveal-group=""
-      data-inview="true"
       variants={containerVariants}
       initial="hidden"
       animate="visible"

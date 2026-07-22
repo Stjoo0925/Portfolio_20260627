@@ -24,8 +24,12 @@ export function SkillsSection() {
                 <h2>{cat.name}</h2>
               </div>
               <div className="skills-editorial__chips" aria-label={`${cat.name} stack`}>
-                {cat.items.map((item) => (
-                  <span className="skills-editorial__chip" key={item}>
+                {cat.items.map((item, itemIndex) => (
+                  <span
+                    className="skills-editorial__chip"
+                    data-primary={itemIndex === 0 ? "true" : undefined}
+                    key={item}
+                  >
                     {item}
                   </span>
                 ))}

@@ -54,7 +54,7 @@ export function ExperienceSection() {
     <ScrollSection id="experience" align="start" snap={false}>
       <FadeIn className="route-section-frame editorial-page career-editorial editorial-compact">
         <SectionHeader
-          label="EXPERIENCE"
+          label="CAREER"
           title={exp.title}
           lede="경력, 교육, 훈련을 통해 쌓아온 실무 기반입니다."
         />

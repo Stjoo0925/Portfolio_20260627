@@ -6,7 +6,7 @@
 import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
-import { nodeById } from "@/lib/galaxy/nodes";
+import { findNodeByPathname, nodeById } from "@/lib/galaxy/nodes";
 import { clamp01, useGalaxyStore } from "@/store/galaxy-store";
 
 const Y_AXIS = new THREE.Vector3(0, 1, 0);
@@ -262,8 +262,6 @@ export function BackgroundParticles() {
   }, [count, streakCount]);
 
   const lens = useRef({ strength: 0, pos: new THREE.Vector3(0, 0, -999) });
-  const prevPointer = useRef({ x: 0, y: 0 });
-  const dragWarp = useRef(0);
 
   useFrame((state, delta) => {
     const { phase, phaseStart, formingMs, focusMs, returnMs, hoveredId, focusedId } =
@@ -272,17 +270,9 @@ export function BackgroundParticles() {
     const forming = phase === "forming";
     const form = forming ? clamp01((now - phaseStart) / formingMs) : 1;
 
-    // Pointer velocity tracking for cinematic drag streaks
-    const pointerVelX = state.pointer.x - prevPointer.current.x;
-    const pointerVelY = state.pointer.y - prevPointer.current.y;
-    prevPointer.current.x = state.pointer.x;
-    prevPointer.current.y = state.pointer.y;
-    const speed = Math.sqrt(pointerVelX * pointerVelX + pointerVelY * pointerVelY);
-
-    const targetDragWarp = phase === "exploring" ? Math.min(0.3, speed * 2.2) : 0;
-    dragWarp.current += (targetDragWarp - dragWarp.current) * (1 - Math.exp(-delta * 8));
-
-    // Warp ramps up through the fly-in and decays on the way back
+    // Warp is reserved for the node-selection fly-in/out only — it used to
+    // also fire on ordinary fast mouse movement while idly exploring, which
+    // diluted the "hyperspace" beat into background noise.
     let warp = 0;
     if (phase === "focusing") {
       const p = clamp01((now - phaseStart) / focusMs);
@@ -295,14 +285,16 @@ export function BackgroundParticles() {
     material.uniforms.uTime.value = state.clock.elapsedTime;
     material.uniforms.uForm.value = form;
     streakMaterial.uniforms.uForm.value = form;
-    streakMaterial.uniforms.uWarp.value = Math.max(warp, dragWarp.current);
+    streakMaterial.uniforms.uWarp.value = warp;
 
     // Particle star tint lerps towards active route accent color
     const selectedId = useGalaxyStore.getState().selectedId;
-    const activeNode = selectedId ? nodeById.get(selectedId) : null;
+    const activeNode = selectedId
+      ? nodeById.get(selectedId)
+      : (typeof window !== "undefined" ? findNodeByPathname(window.location.pathname) : null);
     const targetColor = new THREE.Color(0.85, 0.86, 0.9);
     if ((phase === "project" || phase === "focusing") && activeNode) {
-      targetColor.set(activeNode.accent).lerp(new THREE.Color(1, 1, 1), 0.35);
+      targetColor.set(activeNode.accent).lerp(new THREE.Color(0.85, 0.86, 0.9), 0.7);
     }
     (material.uniforms.uColor.value as THREE.Color).lerp(
       targetColor,
