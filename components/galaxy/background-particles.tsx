@@ -260,6 +260,8 @@ export function BackgroundParticles() {
   }, [count, streakCount]);
 
   const lens = useRef({ strength: 0, pos: new THREE.Vector3(0, 0, -999) });
+  const prevPointer = useRef({ x: 0, y: 0 });
+  const dragWarp = useRef(0);
 
   useFrame((state, delta) => {
     const { phase, phaseStart, formingMs, focusMs, returnMs, hoveredId, focusedId } =
@@ -267,6 +269,16 @@ export function BackgroundParticles() {
     const now = performance.now();
     const forming = phase === "forming";
     const form = forming ? clamp01((now - phaseStart) / formingMs) : 1;
+
+    // Pointer velocity tracking for cinematic drag streaks
+    const pointerVelX = state.pointer.x - prevPointer.current.x;
+    const pointerVelY = state.pointer.y - prevPointer.current.y;
+    prevPointer.current.x = state.pointer.x;
+    prevPointer.current.y = state.pointer.y;
+    const speed = Math.sqrt(pointerVelX * pointerVelX + pointerVelY * pointerVelY);
+
+    const targetDragWarp = phase === "exploring" ? Math.min(0.3, speed * 2.2) : 0;
+    dragWarp.current += (targetDragWarp - dragWarp.current) * (1 - Math.exp(-delta * 8));
 
     // Warp ramps up through the fly-in and decays on the way back
     let warp = 0;
@@ -281,7 +293,7 @@ export function BackgroundParticles() {
     material.uniforms.uTime.value = state.clock.elapsedTime;
     material.uniforms.uForm.value = form;
     streakMaterial.uniforms.uForm.value = form;
-    streakMaterial.uniforms.uWarp.value = warp;
+    streakMaterial.uniforms.uWarp.value = Math.max(warp, dragWarp.current);
 
     // Gravity lens follows the hovered/keyboard-focused node while exploring
     const lensNode =

@@ -25,11 +25,13 @@ export function ScrollReveal() {
     };
 
     observeAll();
+    const raf = requestAnimationFrame(observeAll);
 
     const mutations = new MutationObserver(observeAll);
     mutations.observe(document.body, { childList: true, subtree: true });
 
     return () => {
+      cancelAnimationFrame(raf);
       mutations.disconnect();
       observer.disconnect();
     };

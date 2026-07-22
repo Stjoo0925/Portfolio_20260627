@@ -1,4 +1,6 @@
-import type { CSSProperties } from "react";
+"use client";
+
+import { motion } from "framer-motion";
 
 export function TextReveal({
   text,
@@ -9,18 +11,45 @@ export function TextReveal({
 }) {
   const words = text.split(" ");
 
+  const containerVariants = {
+    hidden: {},
+    visible: {
+      transition: {
+        staggerChildren: 0.05,
+      },
+    },
+  };
+
+  const wordVariants = {
+    hidden: { y: "100%", opacity: 0 },
+    visible: {
+      y: "0%",
+      opacity: 1,
+      transition: {
+        duration: 0.55,
+        ease: [0.16, 1, 0.3, 1] as const,
+      },
+    },
+  };
+
   return (
-    <span className={className}>
+    <motion.span
+      className={className}
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
       {words.map((word, index) => (
-        <span key={`${word}-${index}`} className="text-reveal__mask">
-          <span
-            className="text-reveal__word"
-            style={{ "--word-index": index } as CSSProperties}
+        <span key={`${word}-${index}`} className="text-reveal__mask inline-block overflow-hidden mr-[0.25em]">
+          <motion.span
+            className="text-reveal__word inline-block"
+            variants={wordVariants}
           >
             {word}
-          </span>
+          </motion.span>
         </span>
       ))}
-    </span>
+    </motion.span>
   );
 }
+
