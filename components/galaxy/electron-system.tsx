@@ -123,8 +123,8 @@ export function ElectronSystem() {
 
   useFrame((_, delta) => {
     const { phase, hoveredId, focusedId, selectedId } = useGalaxyStore.getState();
-    // Electron traffic only exists once the galaxy has formed
-    if (pointsRef.current) pointsRef.current.visible = phase !== "forming";
+    // Electron traffic only exists once the galaxy has formed and not in project mode
+    if (pointsRef.current) pointsRef.current.visible = phase !== "forming" && phase !== "project";
     if (phase === "project" || phase === "forming") return;
 
     const targetId = selectedId ?? hoveredId ?? focusedId;

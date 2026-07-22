@@ -69,12 +69,13 @@ const VERTEX = /* glsl */ `
 `;
 
 const FRAGMENT = /* glsl */ `
+  uniform vec3 uColor;
   varying float vAlpha;
 
   void main() {
     float d = length(gl_PointCoord - 0.5);
     float a = smoothstep(0.5, 0.05, d);
-    gl_FragColor = vec4(vec3(0.85, 0.86, 0.9), a * vAlpha * 0.8);
+    gl_FragColor = vec4(uColor, a * vAlpha * 0.8);
   }
 `;
 
@@ -214,6 +215,7 @@ export function BackgroundParticles() {
         uForm: { value: 1 },
         uLensPos: { value: new THREE.Vector3(0, 0, -999) },
         uLensStrength: { value: 0 },
+        uColor: { value: new THREE.Color(0.85, 0.86, 0.9) },
       },
       transparent: true,
       depthWrite: false,
@@ -294,6 +296,18 @@ export function BackgroundParticles() {
     material.uniforms.uForm.value = form;
     streakMaterial.uniforms.uForm.value = form;
     streakMaterial.uniforms.uWarp.value = Math.max(warp, dragWarp.current);
+
+    // Particle star tint lerps towards active route accent color
+    const selectedId = useGalaxyStore.getState().selectedId;
+    const activeNode = selectedId ? nodeById.get(selectedId) : null;
+    const targetColor = new THREE.Color(0.85, 0.86, 0.9);
+    if ((phase === "project" || phase === "focusing") && activeNode) {
+      targetColor.set(activeNode.accent).lerp(new THREE.Color(1, 1, 1), 0.35);
+    }
+    (material.uniforms.uColor.value as THREE.Color).lerp(
+      targetColor,
+      1 - Math.exp(-delta * 3.5),
+    );
 
     // Gravity lens follows the hovered/keyboard-focused node while exploring
     const lensNode =

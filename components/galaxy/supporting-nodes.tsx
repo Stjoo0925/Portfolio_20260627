@@ -24,6 +24,7 @@ export function SupportingNodes() {
     const mesh = meshRef.current;
     if (!mesh) return;
     const { phase, phaseStart, formingMs } = useGalaxyStore.getState();
+    mesh.visible = phase !== "project";
     if (phase === "project") return;
 
     // Opening: spheres condense in a staggered wave after the star infall

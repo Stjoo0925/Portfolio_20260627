@@ -108,6 +108,7 @@ export function ConnectionLines() {
   useFrame((_, delta) => {
     const { hoveredId, focusedId, selectedId, phase, phaseStart, formingMs } =
       useGalaxyStore.getState();
+    if (groupRef.current) groupRef.current.visible = phase !== "project";
     if (phase === "project") return;
 
     // Opening: main paths draw on point by point like a circuit powering up,

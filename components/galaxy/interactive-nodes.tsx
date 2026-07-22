@@ -130,6 +130,9 @@ function InteractiveNode({ node }: { node: GalaxyNode }) {
       formingMs,
       focusMs,
     } = useGalaxyStore.getState();
+
+    group.visible = phase !== "project";
+    if (!group.visible) return;
     const now = performance.now();
 
     // Opening: the node condenses out of the infalling stars — scale-up from

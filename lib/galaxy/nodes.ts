@@ -8,6 +8,8 @@ export type GalaxyNode = {
   radius: number;
   /** Muted editorial accent used to identify interactive nodes. */
   accent: string;
+  /** Secondary deeper accent for dual-stop aurora gradient mesh */
+  secondaryAccent: string;
   featured?: boolean;
 };
 
@@ -22,12 +24,12 @@ export type GalaxyConnection = {
  * (z ≈ +26 looking at origin): dense center, sparse rim.
  */
 export const galaxyNodes: GalaxyNode[] = [
-  { id: "about", label: "ABOUT ME", href: "/about", position: [-6.4, 2.8, -2], radius: 0.86, accent: "#8FB8D8" },
-  { id: "skills", label: "SKILLS", href: "/skills", position: [5.6, 3.8, -6], radius: 0.8, accent: "#8FBFAE" },
-  { id: "experience", label: "EXPERIENCE", href: "/experience", position: [-9.6, -2, -10], radius: 0.8, accent: "#C7A96B" },
-  { id: "projects", label: "PROJECTS", href: "/projects", position: [7.2, -2.6, -2], radius: 1.05, accent: "#C8897A", featured: true },
-  { id: "lab", label: "LAB", href: "/lab", position: [0.6, 5.4, -12], radius: 0.72, accent: "#A99BCB" },
-  { id: "contact", label: "CONTACT", href: "/contact", position: [-1.8, -5, -7], radius: 0.72, accent: "#9EB98E" },
+  { id: "about", label: "ABOUT ME", href: "/about", position: [-6.4, 2.8, -2], radius: 0.86, accent: "#8FB8D8", secondaryAccent: "#142C44" },
+  { id: "skills", label: "SKILLS", href: "/skills", position: [5.6, 3.8, -6], radius: 0.8, accent: "#8FBFAE", secondaryAccent: "#12382F" },
+  { id: "experience", label: "EXPERIENCE", href: "/experience", position: [-9.6, -2, -10], radius: 0.8, accent: "#C7A96B", secondaryAccent: "#3B2B12" },
+  { id: "projects", label: "PROJECTS", href: "/projects", position: [7.2, -2.6, -2], radius: 1.05, accent: "#C8897A", secondaryAccent: "#3D1B16", featured: true },
+  { id: "lab", label: "LAB", href: "/lab", position: [0.6, 5.4, -12], radius: 0.72, accent: "#A99BCB", secondaryAccent: "#281B42" },
+  { id: "contact", label: "CONTACT", href: "/contact", position: [-1.8, -5, -7], radius: 0.72, accent: "#9EB98E", secondaryAccent: "#1F3316" },
 ];
 
 /** Faint curved silver paths; electrons travel along these. */
@@ -52,3 +54,4 @@ export function findNodeByPathname(pathname: string): GalaxyNode | null {
 }
 
 export const GALAXY_NODE_COUNT_LABEL = `${String(galaxyNodes.length).padStart(2, "0")} NODES`;
+

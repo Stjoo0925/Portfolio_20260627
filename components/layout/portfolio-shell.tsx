@@ -12,6 +12,8 @@ import { nodeById } from "@/lib/galaxy/nodes";
 import { useGalaxyStore } from "@/store/galaxy-store";
 import type { Section } from "@/lib/content/schema";
 
+import { RouteAurora } from "@/components/layout/route-aurora";
+
 export function PortfolioShell({
   children,
   sections,
@@ -72,6 +74,7 @@ export function PortfolioShell({
 
   return (
     <>
+      <RouteAurora />
       <header className="portfolio-nav" data-home={isHome ? "true" : "false"}>
         <Link
           href="/"

@@ -3802,7 +3802,118 @@ html {
 }
 
 .galaxy-layer[data-dim="true"] {
-  opacity: 0.16;
+  opacity: 0.58;
+}
+
+/* ── Dynamic Route Aurora Background ───────────────────────────── */
+
+.route-aurora {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.4s var(--ease-out-expo);
+  overflow: hidden;
+  will-change: opacity;
+}
+
+.route-aurora[data-active="true"] {
+  opacity: 1;
+}
+
+.route-aurora__blob {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  will-change: transform, background;
+}
+
+.route-aurora__blob--primary {
+  top: -30vw;
+  right: -15vw;
+  width: 70vw;
+  height: 70vw;
+  background: radial-gradient(
+    circle at center,
+    var(--aurora-primary, #8FBFAE) 0%,
+    var(--aurora-secondary, #12382F) 45%,
+    transparent 75%
+  );
+  opacity: 0.38;
+  filter: blur(100px);
+  transform: translate3d(var(--aurora-mouse-x, 0px), var(--aurora-mouse-y, 0px), 0);
+  transition: background 1.6s var(--ease-out-expo);
+  animation: auroraFloatPrimary 22s ease-in-out infinite alternate;
+}
+
+.route-aurora__blob--secondary {
+  bottom: -35vw;
+  left: -20vw;
+  width: 80vw;
+  height: 80vw;
+  background: radial-gradient(
+    circle at center,
+    var(--aurora-secondary, #12382F) 0%,
+    var(--aurora-primary, #8FBFAE) 40%,
+    transparent 75%
+  );
+  opacity: 0.3;
+  filter: blur(120px);
+  transform: translate3d(calc(var(--aurora-mouse-x, 0px) * -0.5), calc(var(--aurora-mouse-y, 0px) * -0.5), 0);
+  transition: background 1.6s var(--ease-out-expo);
+  animation: auroraFloatSecondary 26s ease-in-out infinite alternate;
+}
+
+.route-aurora__blob--center {
+  top: 15%;
+  left: 20%;
+  width: 60vw;
+  height: 60vw;
+  background: radial-gradient(
+    circle at center,
+    var(--aurora-primary, #8FBFAE) 0%,
+    transparent 65%
+  );
+  opacity: 0.15;
+  filter: blur(140px);
+  transition: background 1.6s var(--ease-out-expo);
+  animation: auroraPulseCenter 18s ease-in-out infinite alternate;
+}
+
+@keyframes auroraFloatPrimary {
+  0% {
+    transform: translate3d(var(--aurora-mouse-x, 0px), var(--aurora-mouse-y, 0px), 0) scale(1) rotate(0deg);
+  }
+  50% {
+    transform: translate3d(calc(var(--aurora-mouse-x, 0px) + 30px), calc(var(--aurora-mouse-y, 0px) + 20px), 0) scale(1.06) rotate(3deg);
+  }
+  100% {
+    transform: translate3d(calc(var(--aurora-mouse-x, 0px) - 20px), calc(var(--aurora-mouse-y, 0px) + 35px), 0) scale(0.96) rotate(-2deg);
+  }
+}
+
+@keyframes auroraFloatSecondary {
+  0% {
+    transform: translate3d(calc(var(--aurora-mouse-x, 0px) * -0.5), calc(var(--aurora-mouse-y, 0px) * -0.5), 0) scale(1);
+  }
+  50% {
+    transform: translate3d(calc(var(--aurora-mouse-x, 0px) * -0.5 - 35px), calc(var(--aurora-mouse-y, 0px) * -0.5 - 25px), 0) scale(1.08);
+  }
+  100% {
+    transform: translate3d(calc(var(--aurora-mouse-x, 0px) * -0.5 + 25px), calc(var(--aurora-mouse-y, 0px) * -0.5 - 15px), 0) scale(0.94);
+  }
+}
+
+@keyframes auroraPulseCenter {
+  0% {
+    opacity: 0.12;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0.2;
+    transform: scale(1.1);
+  }
 }
 
 /* Silver-to-dark crossfade that hides the cut between the expanded
