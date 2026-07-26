@@ -43,10 +43,18 @@ export function DetailPanelShell({
 
   useEffect(() => {
     if (!open) return;
-    const previous = document.body.style.overflow;
+    // The page's actual scroll container is the root <html> element, not
+    // <body> — locking only body.style.overflow left html free to keep
+    // scrolling behind the panel while .detail-panel-body scrolled its own
+    // content, producing two independent scrollbars at once.
+    const root = document.documentElement;
+    const previousRoot = root.style.overflow;
+    const previousBody = document.body.style.overflow;
+    root.style.overflow = "hidden";
     document.body.style.overflow = "hidden";
     return () => {
-      document.body.style.overflow = previous;
+      root.style.overflow = previousRoot;
+      document.body.style.overflow = previousBody;
     };
   }, [open]);
 

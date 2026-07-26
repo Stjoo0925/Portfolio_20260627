@@ -25,7 +25,7 @@ export function ScrollReveal() {
     };
 
     observeAll();
-    let raf = requestAnimationFrame(observeAll);
+    const raf = requestAnimationFrame(observeAll);
 
     // Coalesce into at most one querySelectorAll pass per frame — a route
     // change can insert hundreds of nodes across many mutation batches, and

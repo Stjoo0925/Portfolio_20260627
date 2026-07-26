@@ -35,6 +35,14 @@
   --duration-fast: 150ms;
   --duration-normal: 300ms;
   --duration-slow: 600ms;
+  /* Entrance/reveal family only — hover and state transitions above stay on
+     fast/normal/slow. Materialize-style reveals (blur/letter-spacing/hairline
+     draws) previously used a dozen one-off values (0.7s/0.75s/0.8s/0.85s/
+     0.9s/1.1s/1.15s/1.2s) that made every reveal complete at a slightly
+     different moment; collapsing them to two shared beats gives arrivals a
+     consistent rhythm instead of reading as independently-tuned pieces. */
+  --duration-slower: 900ms;
+  --duration-slowest: 1200ms;
 
   --z-content: 10;
   --z-header: 50;
@@ -284,72 +292,6 @@
   color: var(--color-text-cyan);
 }
 
-.elevated-card {
-  position: relative;
-  overflow: hidden;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-container);
-  background: color-mix(in oklab, var(--color-background-card) 86%, transparent);
-  box-shadow: var(--shadow-sm);
-  backdrop-filter: blur(18px);
-  transition:
-    border-color var(--duration-slow) var(--ease-out-expo),
-    background-color var(--duration-slow) var(--ease-out-expo),
-    box-shadow var(--duration-slow) var(--ease-out-expo);
-}
-
-.elevated-card:hover,
-.elevated-card--selected {
-  border-color: var(--line-mid);
-  background: color-mix(in oklab, var(--color-background-cyan) 34%, var(--color-background-card));
-  box-shadow: var(--shadow-md);
-}
-
-/* Inner sheen: a soft white light that tracks the cursor inside the card */
-.elevated-card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(320px circle at var(--pointer-x, -400px) var(--pointer-y, -400px),
-      rgba(255, 255, 255, 0.05),
-      transparent 65%);
-  opacity: 0;
-  transition: opacity var(--duration-slow) var(--ease-out-expo);
-  pointer-events: none;
-}
-
-.elevated-card:hover::before {
-  opacity: 1;
-}
-
-/* Pointer-following white line: a 1px ring lit only near the cursor */
-.elevated-card::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  border: 1px solid transparent;
-  border-radius: inherit;
-  background: radial-gradient(300px circle at var(--pointer-x, -400px) var(--pointer-y, -400px),
-      rgba(255, 255, 255, 0.95),
-      transparent 70%) border-box;
-  -webkit-mask:
-    linear-gradient(#000 0 0) padding-box,
-    linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask:
-    linear-gradient(#000 0 0) padding-box,
-    linear-gradient(#000 0 0);
-  mask-composite: exclude;
-  opacity: 0;
-  transition: opacity var(--duration-slow) var(--ease-out-expo);
-  pointer-events: none;
-}
-
-.elevated-card:hover::after {
-  opacity: 1;
-}
-
 .legacy-hero {
   width: 100%;
   max-width: 56rem;
@@ -588,6 +530,13 @@ body {
 
   .portfolio-nav__link {
     scroll-snap-align: start;
+    /* padding-block: var(--spacing-2) (0.5rem) alone leaves an ~29px tap
+       target — comfortably readable but noticeably smaller than the ~44px
+       touch-target minimum, especially for short labels like "LAB". The
+       nav bar itself has plenty of vertical room, so widen the hit area
+       without changing the visual text size. */
+    padding-block: 0.7rem;
+    margin-block: -0.2rem;
   }
 
   .portfolio-nav[data-home="true"]+main .scroll-section--center,
@@ -1459,8 +1408,7 @@ body {
 
 /* White underline sweeps in under the title on card hover */
 
-.group:hover .work-card__title::after,
-.elevated-card--selected .work-card__title::after {
+.group:hover .work-card__title::after {
   transform: scaleX(1);
 }
 
@@ -1889,6 +1837,13 @@ html {
   scroll-padding-top: 4.5rem;
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+  /* body already has overflow-x: hidden, but position:fixed elements (the
+     3D node labels, route-aurora blobs) are positioned against the viewport
+     and aren't clipped by an ancestor's overflow — only the root scrolling
+     box's own overflow setting affects them. Off-frustum node labels
+     projecting to large fixed coordinates were inflating scrollWidth and
+     causing real horizontal scroll on mobile despite body's rule. */
+  overflow-x: hidden;
 }
 
 /* Scroll reveal: hide-before-reveal only applies when scripting is on,
@@ -1898,8 +1853,8 @@ html {
     opacity: 0;
     transform: translateY(18px);
     transition:
-      opacity 0.8s var(--ease-out-expo) var(--reveal-delay, 0ms),
-      transform 0.8s var(--ease-out-expo) var(--reveal-delay, 0ms);
+      opacity var(--duration-slower) var(--ease-out-expo) var(--reveal-delay, 0ms),
+      transform var(--duration-slower) var(--ease-out-expo) var(--reveal-delay, 0ms);
   }
 
   [data-reveal][data-inview="true"] {
@@ -1912,7 +1867,7 @@ html {
     opacity: 1;
     transform: scaleX(0);
     transform-origin: left;
-    transition: transform 1.1s var(--ease-out-expo) var(--reveal-delay, 0ms);
+    transition: transform var(--duration-slowest) var(--ease-out-expo) var(--reveal-delay, 0ms);
   }
 
   [data-reveal="line"][data-inview="true"] {
@@ -1925,10 +1880,10 @@ html {
     letter-spacing: 0.12em;
     filter: blur(9px);
     transition:
-      opacity 0.7s var(--ease-out-expo) var(--reveal-delay, 0ms),
-      transform 0.7s var(--ease-out-expo) var(--reveal-delay, 0ms),
-      filter 0.8s var(--ease-out-expo) var(--reveal-delay, 0ms),
-      letter-spacing 1.15s var(--ease-out-expo) var(--reveal-delay, 0ms);
+      opacity var(--duration-slower) var(--ease-out-expo) var(--reveal-delay, 0ms),
+      transform var(--duration-slower) var(--ease-out-expo) var(--reveal-delay, 0ms),
+      filter var(--duration-slower) var(--ease-out-expo) var(--reveal-delay, 0ms),
+      letter-spacing var(--duration-slowest) var(--ease-out-expo) var(--reveal-delay, 0ms);
   }
 
   .section-header-title[data-reveal][data-inview="true"] {
@@ -1956,7 +1911,7 @@ html {
 
 /* Hero load choreography (pure CSS, runs without JS) */
 .hero-enter {
-  animation: hero-rise 0.9s var(--ease-out-expo) both;
+  animation: hero-rise var(--duration-slower) var(--ease-out-expo) both;
   animation-delay: var(--enter-delay, 0ms);
 }
 
@@ -1992,7 +1947,7 @@ html {
 .text-reveal__word {
   display: inline-block;
   transform: translateY(120%);
-  animation: word-rise 0.9s var(--ease-out-expo) forwards;
+  animation: word-rise var(--duration-slower) var(--ease-out-expo) forwards;
   animation-delay: calc(var(--word-index, 0) * 90ms + 180ms);
 }
 
@@ -2011,7 +1966,7 @@ html {
       rgba(255, 255, 255, 0.05));
   transform: scaleX(1);
   transform-origin: left;
-  transition: transform 0.9s var(--ease-out-expo);
+  transition: transform var(--duration-slower) var(--ease-out-expo);
 }
 
 /* Hovering anywhere over the hero stretches the line */
@@ -2021,7 +1976,7 @@ html {
 
 .hero-rule {
   /* backwards (not both) so the hover transition owns the end state */
-  animation: rule-draw 1.2s var(--ease-out-expo) backwards;
+  animation: rule-draw var(--duration-slowest) var(--ease-out-expo) backwards;
   animation-delay: var(--enter-delay, 0ms);
 }
 
@@ -2188,11 +2143,38 @@ html {
   inset: 0;
   z-index: 0;
   background: #000000;
-  transition: opacity 1.1s var(--ease-out-expo);
+  transition: opacity var(--duration-slowest) var(--ease-out-expo);
 }
 
 .galaxy-layer[data-dim="true"] {
-  opacity: 0.58;
+  opacity: 0.4;
+}
+
+/* Push the field behind the reading plane instead of leaving it co-planar
+   with text: a soft defocus plus a scrim gradient confined to the top/bottom
+   thirds (never the reading column) so sphere silhouettes never cross type. */
+.galaxy-layer canvas {
+  transition: filter var(--duration-slowest) var(--ease-out-expo);
+}
+
+.galaxy-layer[data-dim="true"] canvas {
+  filter: blur(2.5px) brightness(0.72) saturate(0.8);
+}
+
+.galaxy-layer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(to bottom, rgba(3, 3, 4, 0.6) 0%, transparent 24%),
+    linear-gradient(to top, rgba(3, 3, 4, 0.68) 0%, transparent 30%);
+  opacity: 0;
+  transition: opacity var(--duration-slowest) var(--ease-out-expo);
+}
+
+.galaxy-layer[data-dim="true"]::after {
+  opacity: 1;
 }
 
 /* ── Dynamic Route Aurora Background ───────────────────────────── */
@@ -2216,94 +2198,36 @@ html {
   position: absolute;
   border-radius: 50%;
   pointer-events: none;
-  will-change: transform, background;
 }
 
 .route-aurora__blob--primary {
-  top: -30vw;
-  right: -15vw;
-  width: 70vw;
-  height: 70vw;
+  top: -25vw;
+  right: -10vw;
+  width: 58vw;
+  height: 58vw;
   background: radial-gradient(
     circle at center,
     var(--aurora-primary, #8FBFAE) 0%,
-    var(--aurora-secondary, #12382F) 45%,
-    transparent 75%
+    transparent 70%
   );
-  opacity: 0.38;
-  filter: blur(100px);
-  transform: translate3d(var(--aurora-mouse-x, 0px), var(--aurora-mouse-y, 0px), 0);
+  opacity: 0.2;
+  filter: blur(96px);
   transition: background 1.6s var(--ease-out-expo);
-  animation: auroraFloatPrimary 22s ease-in-out infinite alternate;
 }
 
 .route-aurora__blob--secondary {
-  bottom: -35vw;
-  left: -20vw;
-  width: 80vw;
-  height: 80vw;
+  bottom: -28vw;
+  left: -14vw;
+  width: 62vw;
+  height: 62vw;
   background: radial-gradient(
     circle at center,
     var(--aurora-secondary, #12382F) 0%,
-    var(--aurora-primary, #8FBFAE) 40%,
-    transparent 75%
+    transparent 70%
   );
-  opacity: 0.3;
-  filter: blur(120px);
-  transform: translate3d(calc(var(--aurora-mouse-x, 0px) * -0.5), calc(var(--aurora-mouse-y, 0px) * -0.5), 0);
+  opacity: 0.16;
+  filter: blur(110px);
   transition: background 1.6s var(--ease-out-expo);
-  animation: auroraFloatSecondary 26s ease-in-out infinite alternate;
-}
-
-.route-aurora__blob--center {
-  top: 15%;
-  left: 20%;
-  width: 60vw;
-  height: 60vw;
-  background: radial-gradient(
-    circle at center,
-    var(--aurora-primary, #8FBFAE) 0%,
-    transparent 65%
-  );
-  opacity: 0.15;
-  filter: blur(140px);
-  transition: background 1.6s var(--ease-out-expo);
-  animation: auroraPulseCenter 18s ease-in-out infinite alternate;
-}
-
-@keyframes auroraFloatPrimary {
-  0% {
-    transform: translate3d(var(--aurora-mouse-x, 0px), var(--aurora-mouse-y, 0px), 0) scale(1) rotate(0deg);
-  }
-  50% {
-    transform: translate3d(calc(var(--aurora-mouse-x, 0px) + 30px), calc(var(--aurora-mouse-y, 0px) + 20px), 0) scale(1.06) rotate(3deg);
-  }
-  100% {
-    transform: translate3d(calc(var(--aurora-mouse-x, 0px) - 20px), calc(var(--aurora-mouse-y, 0px) + 35px), 0) scale(0.96) rotate(-2deg);
-  }
-}
-
-@keyframes auroraFloatSecondary {
-  0% {
-    transform: translate3d(calc(var(--aurora-mouse-x, 0px) * -0.5), calc(var(--aurora-mouse-y, 0px) * -0.5), 0) scale(1);
-  }
-  50% {
-    transform: translate3d(calc(var(--aurora-mouse-x, 0px) * -0.5 - 35px), calc(var(--aurora-mouse-y, 0px) * -0.5 - 25px), 0) scale(1.08);
-  }
-  100% {
-    transform: translate3d(calc(var(--aurora-mouse-x, 0px) * -0.5 + 25px), calc(var(--aurora-mouse-y, 0px) * -0.5 - 15px), 0) scale(0.94);
-  }
-}
-
-@keyframes auroraPulseCenter {
-  0% {
-    opacity: 0.12;
-    transform: scale(1);
-  }
-  100% {
-    opacity: 0.2;
-    transform: scale(1.1);
-  }
 }
 
 /* Silver-to-dark crossfade that hides the cut between the expanded
@@ -2470,10 +2394,10 @@ html {
   .galaxy-intro__role,
   .galaxy-intro__tagline {
     transition:
-      opacity 0.75s var(--ease-out-expo),
-      transform 0.75s var(--ease-out-expo),
-      filter 0.85s var(--ease-out-expo),
-      letter-spacing 1.2s var(--ease-out-expo);
+      opacity var(--duration-slower) var(--ease-out-expo),
+      transform var(--duration-slower) var(--ease-out-expo),
+      filter var(--duration-slower) var(--ease-out-expo),
+      letter-spacing var(--duration-slowest) var(--ease-out-expo);
   }
 
   .galaxy-intro[data-visible="false"] .galaxy-intro__eyebrow,
@@ -2567,6 +2491,17 @@ html {
   gap: clamp(3rem, 8vw, 8rem);
 }
 
+@media (max-width: 760px) {
+  /* This rule sits later in the cascade than the mobile collapse at
+     ~line 1224, so without repeating it here the two hard track minimums
+     above (16rem + 22rem = 38rem) win at any width and force real
+     horizontal page overflow on mobile — the grid never actually
+     collapses to one column. */
+  .about-editorial__lead {
+    grid-template-columns: 1fr;
+  }
+}
+
 .skills-editorial__list {
   margin-top: 0;
   margin: clamp(4rem, 8vw, 7rem) 0 0;
@@ -2606,6 +2541,17 @@ html {
   align-items: end;
   display: grid;
   gap: clamp(3rem, 8vw, 8rem);
+}
+
+@media (max-width: 760px) {
+  /* Same issue as .about-editorial__lead above: this rule sits later in
+     the cascade than the mobile collapse at ~line 858, so without
+     repeating it here the 15rem hard minimum on the first track eats
+     nearly the whole viewport and squeezes the email into a ~24px column
+     that wraps character-by-character instead of collapsing to one column. */
+  .contact-editorial__lead {
+    grid-template-columns: 1fr;
+  }
 }
 
 .contact-editorial__footer {
@@ -2756,6 +2702,13 @@ html {
 
   .portfolio-nav__link {
     scroll-snap-align: start;
+    /* padding-block: var(--spacing-2) (0.5rem) alone leaves an ~29px tap
+       target — comfortably readable but noticeably smaller than the ~44px
+       touch-target minimum, especially for short labels like "LAB". The
+       nav bar itself has plenty of vertical room, so widen the hit area
+       without changing the visual text size. */
+    padding-block: 0.7rem;
+    margin-block: -0.2rem;
   }
 
   .portfolio-nav[data-home="true"]+main .scroll-section--center,
@@ -3146,4 +3099,81 @@ html {
   box-shadow: inset 3px 0 0 var(--hierarchy-accent);
   outline: 1px dashed var(--line-mid);
   outline-offset: -1px;
+}
+
+/* ── Absolute final mobile nav fix ──────────────────────────────────
+   This file has several same-selector rules scattered across many
+   media-query blocks at different source positions; for .portfolio-nav
+   specifically an early rule (~line 1768) sets flex-direction:column on
+   mobile, stacking the "← 홈으로" back-link above the nav links as two
+   visual rows. Nothing later in the normal cascade undoes that specific
+   property, and a separate bare (non-media) rule for .scroll-section
+   padding-top wins over the mobile-specific value, so content was also
+   rendering underneath the (taller, 2-row) fixed nav by ~36px. Using
+   !important here, at the true end of the file, so this is unambiguously
+   the final word regardless of future edits elsewhere in the cascade. */
+@media (max-width: 640px) {
+  .portfolio-nav {
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    height: 4.5rem !important;
+    padding-block: 0 !important;
+  }
+
+  .scroll-section--start,
+  .scroll-section--center {
+    padding-top: 5.5rem !important;
+  }
+
+  /* The "← 홈으로" back-link shared the single nav row with the
+     horizontally-scrollable section links, cramping both. It moves to a
+     standalone floating button (.mobile-home-fab, below) on mobile, so the
+     nav row's full width goes to the section links instead. */
+  .portfolio-nav__brand {
+    display: none !important;
+  }
+}
+
+/* Floating "back to home" — mobile-only stand-in for .portfolio-nav__brand
+   (which is hidden above). Bottom-right, thumb-reachable, always on top of
+   page content but under the route-transition overlay. */
+.mobile-home-fab {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .mobile-home-fab {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    right: 1.25rem;
+    bottom: 1.25rem;
+    z-index: var(--z-header);
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    border: 1px solid var(--line-mid);
+    background: color-mix(in oklab, var(--color-background-body) 80%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    color: var(--color-text-primary);
+    font-size: 1.125rem;
+    text-decoration: none;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+    transition: border-color var(--duration-fast) var(--ease-out-expo),
+      background-color var(--duration-fast) var(--ease-out-expo);
+  }
+
+  .mobile-home-fab:hover,
+  .mobile-home-fab:focus-visible {
+    border-color: var(--line-bright);
+    background: color-mix(in oklab, var(--color-background-body) 92%, transparent);
+  }
+
+  .mobile-home-fab:focus-visible {
+    outline: 2px solid var(--line-bright);
+    outline-offset: 3px;
+  }
 }

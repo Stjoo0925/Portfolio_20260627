@@ -126,6 +126,21 @@ export function easeInOutCubic(t: number) {
   return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 }
 
+/**
+ * Anticipation ease for the warp fly-in: a brief negative dip (a small pull
+ * back, like a coiled spring) before the main ease-out push. Consumers that
+ * shouldn't go negative (scale, FOV, emissive intensity...) should clamp
+ * with `Math.max(0, ...)`, which turns the dip into a held beat instead —
+ * the warp used to react instantly and proportionally to elapsed time,
+ * which read as an abrupt jump-cut rather than a wound-up launch.
+ */
+export function easeAnticipate(t: number) {
+  const HOLD = 0.12;
+  if (t <= 0) return 0;
+  if (t < HOLD) return -0.14 * Math.sin((t / HOLD) * Math.PI);
+  return easeOutExpo((t - HOLD) / (1 - HOLD));
+}
+
 export function clamp01(value: number) {
   return Math.min(1, Math.max(0, value));
 }

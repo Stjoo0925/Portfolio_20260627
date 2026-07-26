@@ -25,7 +25,10 @@ export function buildSupportingNodes(count: number): SupportingNodeData[] {
         (random() - 0.5) * 13,
         Math.sin(angle) * radius - 10,
       ],
-      scale: 0.09 + random() * 0.2,
+      // Kept well under the smallest interactive node radius (0.72) even at
+      // the top of this range, so proximity-to-camera perspective can't make
+      // a decorative sphere read as large as an actual clickable node.
+      scale: 0.06 + random() * 0.14,
       floatPhase: random() * Math.PI * 2,
       floatAmp: 0.12 + random() * 0.16,
     };

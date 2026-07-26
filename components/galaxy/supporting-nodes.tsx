@@ -53,11 +53,15 @@ export function SupportingNodes() {
   return (
     <instancedMesh ref={meshRef} args={[undefined, undefined, count]} frustumCulled={false}>
       <sphereGeometry args={[1, 20, 20]} />
+      {/* Deliberately duller and less reflective than the interactive nodes'
+          material (metalness 1, no emissive) — these are unclickable
+          atmosphere, and a sharp chrome highlight here reads as "another
+          lit node worth trying," which is exactly the ambiguity to avoid. */}
       <meshStandardMaterial
-        color="#a9a9b0"
-        metalness={1}
-        roughness={0.38}
-        envMapIntensity={0.85}
+        color="#7d7d86"
+        metalness={0.55}
+        roughness={0.65}
+        envMapIntensity={0.45}
       />
     </instancedMesh>
   );

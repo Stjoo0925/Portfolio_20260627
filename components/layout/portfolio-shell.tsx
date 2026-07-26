@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { AnimatePresence, motion } from "framer-motion";
 import {
   HOME_SECTION_ID,
   getActiveSection,
@@ -114,6 +113,22 @@ export function PortfolioShell({
       <main className="relative" style={{ zIndex: "var(--z-content)" }}>
         {children}
       </main>
+
+      {/* Mobile-only: the nav row's back-link was sharing space with the
+          horizontally-scrollable section links on narrow screens (cramped,
+          and ate into how many links were visible without scrolling).
+          A separate floating button keeps the nav row 100% dedicated to
+          section links and gives "home" its own always-reachable target. */}
+      {!isHome && (
+        <Link
+          href="/"
+          className="mobile-home-fab"
+          onClick={handleHomeClick}
+          aria-label="홈으로 돌아가기"
+        >
+          ←
+        </Link>
+      )}
     </>
   );
 }

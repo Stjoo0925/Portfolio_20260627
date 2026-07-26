@@ -10,11 +10,10 @@ import { BloomEffect } from "postprocessing";
 import { GalaxyEnvironment } from "@/components/galaxy/galaxy-environment";
 import { BackgroundParticles } from "@/components/galaxy/background-particles";
 import { SupportingNodes } from "@/components/galaxy/supporting-nodes";
-import { ConnectionLines } from "@/components/galaxy/connection-lines";
 import { ElectronSystem } from "@/components/galaxy/electron-system";
 import { InteractiveNodes } from "@/components/galaxy/interactive-nodes";
 import { CameraRig } from "@/components/galaxy/camera-rig";
-import { clamp01, useGalaxyStore } from "@/store/galaxy-store";
+import { clamp01, easeAnticipate, useGalaxyStore } from "@/store/galaxy-store";
 
 const BLOOM_BASE = 0.75;
 
@@ -40,8 +39,10 @@ function CinematicEffects() {
     const now = performance.now();
     let intensity = BLOOM_BASE;
     if (phase === "focusing") {
-      const p = clamp01((now - phaseStart) / focusMs);
-      intensity = BLOOM_BASE + 1.1 * p * p;
+      // Held through the camera's pull-back beat, then flares sharply —
+      // matching the sphere's own metal→emissive climax in interactive-nodes.
+      const p = Math.max(0, easeAnticipate(clamp01((now - phaseStart) / focusMs)));
+      intensity = BLOOM_BASE + 1.6 * p * p;
     } else if (phase === "returning") {
       const p = clamp01((now - phaseStart) / returnMs);
       intensity = BLOOM_BASE + 0.9 * (1 - p) * (1 - p);
@@ -58,6 +59,8 @@ function CinematicEffects() {
 
 export default function GalaxyCanvas() {
   const perfLevel = useGalaxyStore((state) => state.perfLevel);
+  const phase = useGalaxyStore((state) => state.phase);
+  const bloomActive = perfLevel === "high" && phase !== "project";
 
   return (
     <Canvas
@@ -77,13 +80,13 @@ export default function GalaxyCanvas() {
       <GalaxyEnvironment />
       <BackgroundParticles />
       <SupportingNodes />
-      <ConnectionLines />
       <ElectronSystem />
       <InteractiveNodes />
       <CameraRig />
-      {/* Cinematic glow on capable hardware only; low-perf devices keep the
-          cheaper additive-sprite glow that is always present underneath */}
-      {perfLevel === "high" && <CinematicEffects />}
+      {/* Cinematic glow on capable hardware only, and only while the galaxy
+          is the thing being looked at — on project pages it's defocused and
+          scrimmed behind page content, so the composer pass is pure waste */}
+      {bloomActive && <CinematicEffects />}
     </Canvas>
   );
 }

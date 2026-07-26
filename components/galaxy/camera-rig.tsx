@@ -6,6 +6,7 @@ import * as THREE from "three";
 import { findNodeByPathname, nodeById } from "@/lib/galaxy/nodes";
 import {
   clamp01,
+  easeAnticipate,
   easeInOutCubic,
   useGalaxyStore,
 } from "@/store/galaxy-store";
@@ -45,6 +46,8 @@ export function CameraRig() {
       desiredLook: new THREE.Vector3(),
       nodeCenter: new THREE.Vector3(),
       focusEnd: new THREE.Vector3(),
+      formingPos: new THREE.Vector3(),
+      formingLook: new THREE.Vector3(),
     }),
     [],
   );
@@ -102,6 +105,26 @@ export function CameraRig() {
     const now = performance.now();
     const t = state.clock.elapsedTime;
 
+    // Portrait phones (identity text anchored to the bottom of the
+    // viewport via CSS) need the node cluster pulled back and pitched
+    // toward the top of frame — otherwise, at a landscape-tuned FOV and
+    // framing, nodes end up visually colliding with the hero text and the
+    // widest-spread nodes bleed off the narrow left/right edges. Aspect is
+    // read live from the R3F canvas size so this also adapts to orientation
+    // changes and resizing, not just a one-time device check.
+    //
+    // A small world-space Y/look offset barely moves the apparent pitch at
+    // this camera distance (the shift is tiny relative to ~40 units of
+    // depth), so the actual framing fix is a fixed extra downward pitch
+    // rotation applied directly to the camera after every lookAt below —
+    // pitching the camera down shifts elevated world content (the node
+    // cluster) up toward the top of the frame, clear of the bottom-anchored
+    // text. zBoost alone handles the horizontal edge-clipping.
+    const aspect = state.size.width / state.size.height;
+    const portrait = clamp01((0.86 - aspect) / 0.5);
+    const zBoost = 1 + portrait * 0.55;
+    const portraitPitch = portrait * 0.32;
+
     // Idle target: slow drift + pointer parallax + drag/wheel offsets.
     // Amplitude kept low so the idle scene settles rather than perpetually
     // drifting — the warp/selection moments should read as the exception,
@@ -109,7 +132,7 @@ export function CameraRig() {
     scratch.desired.set(
       BASE_POSITION.x + Math.sin(t * 0.05) * 0.4 + state.pointer.x * 1.5 + r.dragYaw * 7,
       BASE_POSITION.y + Math.cos(t * 0.04) * 0.25 - state.pointer.y * 0.9 - r.dragPitch * 4,
-      BASE_POSITION.z + Math.sin(t * 0.03) * 0.35 + r.depth,
+      BASE_POSITION.z * zBoost + Math.sin(t * 0.03) * 0.35 + r.depth,
     );
     scratch.desiredLook.set(
       BASE_LOOK.x + state.pointer.x * 0.9 + r.dragYaw * 3,
@@ -121,6 +144,7 @@ export function CameraRig() {
       camera.position.copy(BASE_POSITION);
       r.look.copy(BASE_LOOK);
       camera.lookAt(r.look);
+      if (portraitPitch > 0.0001) camera.rotateX(-portraitPitch);
       return;
     }
 
@@ -128,12 +152,21 @@ export function CameraRig() {
 
     if (phase === "forming") {
       // Opening dolly: ease from the elevated vantage down into the exact
-      // idle drift target so the exploring hand-off is seamless
+      // idle drift target so the exploring hand-off is seamless. The
+      // vantage itself gets the same portrait pull-back as the idle target
+      // (scaled down slightly since it starts further out already).
       r.capturedPhase = "forming";
+      scratch.formingPos.set(
+        FORMING_POSITION.x,
+        FORMING_POSITION.y,
+        FORMING_POSITION.z * (1 + portrait * 0.3),
+      );
+      scratch.formingLook.copy(FORMING_LOOK);
       const p = easeInOutCubic(clamp01((now - phaseStart) / formingMs));
-      camera.position.lerpVectors(FORMING_POSITION, scratch.desired, p);
-      r.look.lerpVectors(FORMING_LOOK, scratch.desiredLook, p);
+      camera.position.lerpVectors(scratch.formingPos, scratch.desired, p);
+      r.look.lerpVectors(scratch.formingLook, scratch.desiredLook, p);
       camera.lookAt(r.look);
+      if (portraitPitch > 0.0001) camera.rotateX(-portraitPitch);
       return;
     }
 
@@ -167,9 +200,14 @@ export function CameraRig() {
           .normalize()
           .multiplyScalar(2.4)
           .add(scratch.nodeCenter);
-        const p = easeInOutCubic(clamp01((now - phaseStart) / focusMs));
+        // Anticipation: the camera eases back slightly before the dive (p
+        // briefly negative, extrapolating backward along the savedPos→
+        // focusEnd line) — a wound-up launch instead of an instant snap
+        // toward the node.
+        const tp = clamp01((now - phaseStart) / focusMs);
+        const p = easeAnticipate(tp);
         camera.position.lerpVectors(r.savedPos, scratch.focusEnd, p);
-        r.look.lerpVectors(r.savedLook, scratch.nodeCenter, Math.min(1, p * 1.6));
+        r.look.lerpVectors(r.savedLook, scratch.nodeCenter, Math.min(1, Math.max(0, p) * 1.6));
       }
     } else if (phase === "returning") {
       if (r.capturedPhase !== "returning") {
@@ -214,12 +252,23 @@ export function CameraRig() {
     }
 
     camera.lookAt(r.look);
+    // Only the idle/explore framing (and its converge/return neighbours)
+    // needs the portrait pitch correction — focusing/project already frame
+    // a single node deliberately and shouldn't get an extra tilt on top.
+    if (
+      portraitPitch > 0.0001 &&
+      (phase === "exploring" || phase === "converging" || phase === "returning")
+    ) {
+      camera.rotateX(-portraitPitch);
+    }
 
     // Warp FOV kick: widen through the fly-in, relax back on return/idle
     const cam = camera as THREE.PerspectiveCamera;
     let targetFov = 55;
     if (phase === "focusing") {
-      const p = clamp01((now - phaseStart) / focusMs);
+      // Clamped anticipation: FOV holds near its resting value through the
+      // pull-back beat, then kicks wide once the dive actually starts.
+      const p = Math.max(0, easeAnticipate(clamp01((now - phaseStart) / focusMs)));
       targetFov = 55 + 26 * p * p;
     } else if (phase === "returning") {
       const p = clamp01((now - phaseStart) / returnMs);

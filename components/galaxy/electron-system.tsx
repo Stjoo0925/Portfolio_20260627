@@ -20,7 +20,7 @@ const VERTEX = /* glsl */ `
   void main() {
     vAlpha = aAlpha;
     vec4 mv = modelViewMatrix * vec4(position, 1.0);
-    gl_PointSize = aSize * (170.0 / -mv.z);
+    gl_PointSize = min(28.0, aSize * (170.0 / -mv.z));
     gl_Position = projectionMatrix * mv;
   }
 `;
@@ -124,7 +124,8 @@ export function ElectronSystem() {
   useFrame((_, delta) => {
     const { phase, hoveredId, focusedId, selectedId } = useGalaxyStore.getState();
     // Electron traffic only exists once the galaxy has formed and not in project mode
-    if (pointsRef.current) pointsRef.current.visible = phase !== "forming" && phase !== "project";
+    const visible = phase !== "forming" && phase !== "project";
+    if (pointsRef.current) pointsRef.current.visible = visible;
     if (phase === "project" || phase === "forming") return;
 
     const targetId = selectedId ?? hoveredId ?? focusedId;

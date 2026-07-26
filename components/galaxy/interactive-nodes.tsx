@@ -11,12 +11,14 @@ import { galaxyNodes, nodeById, type GalaxyNode } from "@/lib/galaxy/nodes";
 import {
   CONVERGE_MS,
   clamp01,
+  easeAnticipate,
   easeOutExpo,
   useGalaxyStore,
 } from "@/store/galaxy-store";
 
 /** World radius the selected sphere grows to while it swallows the camera. */
 const EXPAND_RADIUS = 7;
+const WHITE = new THREE.Color(1, 1, 1);
 
 const FRESNEL_VERTEX = /* glsl */ `
   varying vec3 vNormal;
@@ -103,7 +105,10 @@ function InteractiveNode({ node }: { node: GalaxyNode }) {
   const glowMap = useMemo(() => getGlowTexture(), []);
   const accentColor = useMemo(() => new THREE.Color(node.accent), [node.accent]);
   const baseColor = useMemo(
-    () => new THREE.Color("#c9c9cf").lerp(new THREE.Color(node.accent), 0.42),
+    // Tinted stronger than a purely reflective surface would ever land
+    // naturally — a deliberate, saturated "this one is a door" identity
+    // color, distinct from the supporting nodes' neutral grey.
+    () => new THREE.Color("#c9c9cf").lerp(new THREE.Color(node.accent), 0.58),
     [node.accent],
   );
   const brightColor = useMemo(
@@ -202,17 +207,30 @@ function InteractiveNode({ node }: { node: GalaxyNode }) {
       phase === "converging" || phase === "focusing" || phase === "returning";
     const damp = 1 - Math.exp(-delta * 8);
 
-    // Idle float + subtle rotation
+    // Idle float + subtle rotation — kept deliberately faint at rest (most
+    // of the idle scene's visible motion budget belongs to the camera drift
+    // and electron traffic; every node also floating/spinning at full
+    // strength competed with those instead of reading as one calm scene).
+    // Hover/focus brings a node's own motion up to emphasize it.
+    const isHoveredOrFocused = hoveredId === node.id || focusedId === node.id;
     const t = state.clock.elapsedTime;
-    const floatY = Math.sin(t * 0.3 + node.position[0]) * 0.08;
+    const floatAmplitude = isHoveredOrFocused ? 0.08 : 0.025;
+    const floatY = Math.sin(t * 0.3 + node.position[0]) * floatAmplitude;
     group.position.set(node.position[0], node.position[1] + floatY, node.position[2]);
-    if (sphereRef.current) sphereRef.current.rotation.y += delta * 0.08;
+    if (sphereRef.current) {
+      sphereRef.current.rotation.y += delta * (isHoveredOrFocused ? 0.08 : 0.02);
+    }
 
-    // Scale: hover 1.05; the selected node expands while the camera flies in
+    // Scale: hover 1.05; the selected node expands while the camera flies in.
+    // Anticipation-clamped so growth holds through the pull-back beat, then
+    // leaps once the dive actually starts (see camera-rig.tsx).
     const targetScale = isActive ? 1.05 : 1;
+    const focusP =
+      isSelected && phase === "focusing"
+        ? Math.max(0, easeAnticipate(clamp01((now - phaseStart) / focusMs)))
+        : 0;
     if (isSelected && phase === "focusing") {
-      const p = easeOutExpo(clamp01((now - phaseStart) / focusMs));
-      group.scale.setScalar(1 + (EXPAND_RADIUS / node.radius - 1) * p);
+      group.scale.setScalar(1 + (EXPAND_RADIUS / node.radius - 1) * focusP);
     } else {
       group.scale.lerp(
         new THREE.Vector3(targetScale, targetScale, targetScale),
@@ -220,16 +238,21 @@ function InteractiveNode({ node }: { node: GalaxyNode }) {
       );
     }
 
-    // Brightness: silver → near-white on selection; unrelated nodes dim away
+    // Brightness: silver → near-white on selection; unrelated nodes dim away.
+    // A slow breathing pulse (desynced per-node via its own x position) is
+    // layered onto the idle floor so these read as "alive" beacons at rest,
+    // not just brighter versions of the same static chrome the supporting
+    // nodes use — that idle distinction is the primary clickability cue.
     const dimmed = inTransition && !isSelected;
+    const breathe = 0.5 + 0.5 * Math.sin(t * 0.7 + node.position[0] * 1.3);
     const emissiveTarget =
       isSelected && phase !== "exploring"
         ? 0.5
         : isActive
-          ? 0.22
+          ? 0.3
           : node.featured
-            ? 0.16
-            : 0.11;
+            ? 0.22 + breathe * 0.06
+            : 0.17 + breathe * 0.05;
     material.emissiveIntensity +=
       (emissiveTarget - material.emissiveIntensity) * damp;
     material.emissive.lerp(accentColor, damp);
@@ -239,19 +262,52 @@ function InteractiveNode({ node }: { node: GalaxyNode }) {
     );
     material.opacity += ((dimmed ? 0.22 : 1) - material.opacity) * damp;
 
-    const shellTarget = isSelected && inTransition ? 0.85 : isActive ? 0.7 : 0.32;
+    // Warp climax: as the sphere swallows the camera, crossfade it from a
+    // reflective metal surface into a bright emissive flash — a metal
+    // material lit only by a few point lights reads as a dark, muddy wall
+    // once the camera is nearly inside it. Pushing metalness down and
+    // emissive intensity way up as focusP→1 keeps the surface luminous
+    // instead, so the climax reads as "swallowed by light" rather than
+    // "swallowed by a dim brown blob".
+    if (isSelected && phase === "focusing" && focusP > 0) {
+      const climax = focusP * focusP;
+      material.metalness = 1 - climax * 0.72;
+      material.emissiveIntensity = Math.max(
+        material.emissiveIntensity,
+        0.5 + climax * 3.4,
+      );
+      material.color.lerp(WHITE, climax * 0.9);
+      material.emissive.lerp(WHITE, climax * 0.7);
+    } else if (materialRef.current) {
+      materialRef.current.metalness = 1;
+    }
+
+    const shellTarget = isSelected && inTransition ? 0.85 : isActive ? 0.7 : 0.4 + breathe * 0.08;
     shellMaterial.uniforms.uIntensity.value +=
       (shellTarget - shellMaterial.uniforms.uIntensity.value) * damp;
 
     if (glowRef.current) {
-      const glowTarget = dimmed ? 0.04 : isSelected && inTransition ? 0.5 : isActive ? 0.34 : 0.14;
+      const glowTarget = dimmed
+        ? 0.04
+        : isSelected && inTransition
+          ? 0.5
+          : isActive
+            ? 0.4
+            : 0.2 + breathe * 0.06;
       const spriteMaterial = glowRef.current.material as THREE.SpriteMaterial;
       spriteMaterial.opacity += (glowTarget - spriteMaterial.opacity) * damp;
     }
 
-    // Orbit ring appears on hover / selection
+    // Orbit ring: kept faintly visible at rest (not just on hover) as a
+    // persistent "this is a waypoint" marker, brightening on hover/select —
+    // a ring that only ever appears after the user already hovers doesn't
+    // help them discover the node is interactive in the first place.
     if (ringRef.current && ringMaterialRef.current) {
-      const ringTarget = isActive || (isSelected && phase === "converging") ? 0.5 : 0;
+      const ringTarget = isActive || (isSelected && phase === "converging")
+        ? 0.55
+        : dimmed
+          ? 0
+          : 0.16 + breathe * 0.07;
       ringMaterialRef.current.opacity +=
         (ringTarget - ringMaterialRef.current.opacity) * damp;
       ringRef.current.rotation.z += delta * 0.4;
