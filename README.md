@@ -6,13 +6,15 @@
 
 ## 주요 기능
 
-- **3D 별자리 배경** — React Three Fiber 기반 캔버스가 현재 라우트에 맞춰 섹션 노드를 따라갑니다
+- **3D 은하 인터페이스** — 홈 화면의 별자리 노드가 곧 내비게이션이며, React Three Fiber 캔버스가 루트 레이아웃에서 상시 렌더링되어 라우트 전환에도 끊기지 않습니다
+- **오프닝 시퀀스** — 첫 방문 시 별들이 은하로 수렴하는 인트로가 세션당 한 번 재생됩니다 (`sessionStorage` 게이트)
+- **노드 → 페이지 워프 전환** — 노드를 선택하면 카메라가 구체로 진입(anticipation → warp → 플래시)한 뒤 실제 라우트로 이동, 뒤로 갈 때는 역방향으로 재생됩니다
 - **섹션별 라우팅** — `/about`, `/skills`, `/experience`, `/projects`, `/lab`, `/contact`로 직접 접근
-- **부드러운 전환** — 공통 레이아웃 안에서 페이지 전환과 WebGL 카메라 이동을 함께 처리
 - **콘텐츠 주도 구조** — `content/` JSON 파일을 Zod 스키마로 검증해 렌더링
 - **7개 섹션** — Hero, About, Skills, Experience, Projects, Lab, Contact
 - **상세 패널** — Projects / Lab 항목 클릭 시 슬라이드 패널로 상세 내용 표시
-- **접근성** — `prefers-reduced-motion` 설정 시 3D 캔버스 비활성화
+- **성능/접근성 대응** — 기기 성능(`deviceMemory`, `hardwareConcurrency`, 포인터 타입)에 따라 파티클 수·블룸 이펙트를 조절하고, `prefers-reduced-motion` 설정 시 3D 모션을 생략합니다
+- **모바일 대응** — 좁은 화면에서는 내비게이션이 스크롤 가능한 한 줄로, 홈 이동은 우측 하단 플로팅 버튼으로 분리됩니다
 - **SEO** — Open Graph, Twitter Card, `robots` 메타데이터 지원
 
 ## 기술 스택
@@ -22,11 +24,11 @@
 | Framework | [Next.js](https://nextjs.org) 16 (App Router) |
 | Language | TypeScript |
 | UI | React 19, Tailwind CSS 4 |
-| 3D | Three.js, React Three Fiber, Drei |
-| Animation | Framer Motion |
-| Scroll | Lenis |
+| 3D | Three.js, React Three Fiber, Drei, @react-three/postprocessing |
+| State | Zustand (은하 phase 상태 머신) |
+| Animation | Framer Motion (일부 UI), CSS transitions/커스텀 GLSL 셰이더 (은하 시퀀스) |
 | Validation | Zod |
-| Font | Noto Sans KR, Playfair Display, Geist Mono |
+| Font | Noto Sans KR, Playfair Display |
 
 ## 시작하기
 
@@ -65,17 +67,21 @@ npm run lint
 ```
 ├── app/                    # Next.js App Router (layout, section routes, icons)
 ├── components/
-│   ├── canvas/             # 3D 캔버스 (별자리 씬, 카메라 리그)
-│   ├── motion/             # Framer Motion 래퍼 (fade-in, stagger 등)
+│   ├── galaxy/             # 3D 은하 씬 (파티클, 노드, 카메라 리그, 전자 트래픽)
+│   ├── interface/          # 은하 위에 오버레이되는 랜딩 인터페이스
+│   ├── layout/             # PortfolioShell(내비게이션), RouteAurora
+│   ├── motion/             # Framer Motion 래퍼 (fade-in, stagger, text-reveal 등)
 │   ├── sections/           # 섹션별 UI 컴포넌트
-│   └── ui/                 # Nav, Detail Panel, Tag List 등 공통 UI
+│   └── ui/                 # Detail Panel, Work Card, Tag List 등 공통 UI
 ├── content/                # 포트폴리오 콘텐츠 (JSON)
-├── hooks/                  # 커스텀 훅
+├── hooks/                  # 커스텀 훅 (detail panel scroll lock 등)
 ├── lib/
 │   ├── content/            # 콘텐츠 로더 및 Zod 스키마
+│   ├── galaxy/             # 노드 좌표, 연결 커브, 배경 노드 생성 로직
 │   ├── site.ts             # 사이트 설정 접근자
 │   └── utils.ts            # 유틸리티
-├── providers/              # Smooth Scroll, Detail Panel 컨텍스트
+├── providers/              # Astryx 디자인 시스템, Detail Panel 컨텍스트
+├── store/                  # Zustand 은하 phase 상태 머신
 └── types/                  # 타입 선언
 ```
 

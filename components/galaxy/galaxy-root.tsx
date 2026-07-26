@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect } from "react";
+import { useEffect, useLayoutEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { findNodeByPathname, nodeById } from "@/lib/galaxy/nodes";
 import {
@@ -32,8 +32,13 @@ export function GalaxyRoot() {
   const selectedAccent = selectedId ? nodeById.get(selectedId)?.accent : undefined;
   const focusMs = useGalaxyStore((state) => state.focusMs);
 
-  // Device capability + preference detection
-  useEffect(() => {
+  // Device capability + preference detection. useLayoutEffect (not
+  // useEffect) so webglAvailable/reducedMotion are known before the route
+  // ↔ phase sync effect below runs — both must resolve before the first
+  // paint, or the store's default phase ("exploring") briefly renders the
+  // intro text at full opacity before flipping to "forming" and hiding it,
+  // a visible flash-then-hide on every fresh load of the opening.
+  useLayoutEffect(() => {
     const store = useGalaxyStore.getState();
 
     const media = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -123,8 +128,11 @@ export function GalaxyRoot() {
     // the canvas finishes its (possibly slow) WebGL init and resets the clock.
   }, [phase, phaseStart, canvasReady, router]);
 
-  // Route ↔ phase sync (covers browser back/forward and deep links)
-  useEffect(() => {
+  // Route ↔ phase sync (covers browser back/forward and deep links).
+  // useLayoutEffect for the same reason as the capability-detection effect
+  // above — this is what actually flips phase to "forming", and it must
+  // happen before paint to avoid a flash of the (default-visible) intro.
+  useLayoutEffect(() => {
     const store = useGalaxyStore.getState();
 
     if (pathname === "/") {
