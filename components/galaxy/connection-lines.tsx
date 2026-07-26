@@ -6,10 +6,9 @@
 import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
-import { buildConnectionCurves } from "@/lib/galaxy/curves";
 import { galaxyNodes } from "@/lib/galaxy/nodes";
 import { buildSupportingNodes } from "@/lib/galaxy/supporting-nodes";
-import { clamp01, useGalaxyStore } from "@/store/galaxy-store";
+import { useGalaxyStore } from "@/store/galaxy-store";
 
 function buildAmbientGraph(count: number) {
   const support = buildSupportingNodes(count);
@@ -85,79 +84,15 @@ function buildAmbientGraph(count: number) {
 /** Obsidian-like graph mesh: colored menu hubs inside a connected ambient web. */
 export function ConnectionLines() {
   const perfLevel = useGalaxyStore((state) => state.perfLevel);
-  const supportCount = perfLevel === "low" ? 24 : 46;
-  const lines = useMemo(
-    () =>
-      buildConnectionCurves().map(({ from, to, curve }) => {
-        const geometry = new THREE.BufferGeometry().setFromPoints(curve.getPoints(40));
-        const material = new THREE.LineBasicMaterial({
-          color: new THREE.Color("#ffffff"),
-          transparent: true,
-          opacity: 0.13,
-          depthWrite: false,
-        });
-        return { from, to, line: new THREE.Line(geometry, material), material };
-      }),
-    [],
-  );
-  const ambientGraph = useMemo(() => buildAmbientGraph(supportCount), [supportCount]);
+  const count = perfLevel === "low" ? 24 : 46;
+  const lines = useMemo(() => buildAmbientGraph(count), [count]);
+  const linesRef = useRef(lines);
+  linesRef.current = lines;
 
-  const groupRef = useRef<THREE.Group>(null);
-  const formingApplied = useRef(false);
-
-  useFrame((_, delta) => {
-    const { hoveredId, focusedId, selectedId, phase, phaseStart, formingMs } =
-      useGalaxyStore.getState();
-    if (groupRef.current) groupRef.current.visible = phase !== "project";
-    if (phase === "project") return;
-
-    // Opening: main paths draw on point by point like a circuit powering up,
-    // while ambient graph segments pop in progressively.
-    if (phase === "forming") {
-      formingApplied.current = true;
-      const formP = clamp01((performance.now() - phaseStart) / formingMs);
-
-      lines.forEach((entry, index) => {
-        const p = clamp01((formP - (0.6 + (index % 5) * 0.05)) / 0.22);
-        const vertexCount = entry.line.geometry.getAttribute("position").count;
-        entry.line.geometry.setDrawRange(0, Math.floor(p * vertexCount));
-        entry.material.opacity = 0.13 * Math.min(1, p * 1.6);
-      });
-
-      const ambientP = clamp01((formP - 0.52) / 0.36);
-      const ambientAttr = ambientGraph.geometry.getAttribute("position");
-      // LineSegments draw pairs; keep the count even
-      const ambientVisible = Math.floor((ambientP * ambientAttr.count) / 2) * 2;
-      ambientGraph.geometry.setDrawRange(0, ambientVisible);
-      (ambientGraph.material as THREE.LineBasicMaterial).opacity =
-        0.075 * Math.min(1, ambientP * 1.4);
-      return;
-    }
-
-    if (formingApplied.current) {
-      formingApplied.current = false;
-      lines.forEach((entry) => entry.line.geometry.setDrawRange(0, Infinity));
-      ambientGraph.geometry.setDrawRange(0, Infinity);
-      (ambientGraph.material as THREE.LineBasicMaterial).opacity = 0.075;
-    }
-
-    const activeId = selectedId ?? hoveredId ?? focusedId;
-    const damp = 1 - Math.exp(-delta * 7);
-
-    for (const entry of lines) {
-      const touchesActive =
-        activeId !== null && (entry.from === activeId || entry.to === activeId);
-      const target = touchesActive ? 0.38 : 0.13;
-      entry.material.opacity += (target - entry.material.opacity) * damp;
-    }
+  useFrame(() => {
+    const { phase } = useGalaxyStore.getState();
+    linesRef.current.visible = phase !== "project" && phase !== "forming";
   });
 
-  return (
-    <group ref={groupRef}>
-      <primitive object={ambientGraph} />
-      {lines.map((entry) => (
-        <primitive key={`${entry.from}-${entry.to}`} object={entry.line} />
-      ))}
-    </group>
-  );
+  return <primitive object={lines} />;
 }

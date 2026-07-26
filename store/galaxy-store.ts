@@ -21,7 +21,7 @@ export type GalaxyPhase =
   | "returning";
 
 export const CONVERGE_MS = 550;
-export const FOCUS_MS = 1500;
+export const FOCUS_MS = 1000;
 export const RETURN_MS = 1300;
 export const FORMING_MS = 3200;
 /** Abbreviated opening on low-power devices. */

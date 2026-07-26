@@ -25,9 +25,23 @@ export function ScrollReveal() {
     };
 
     observeAll();
-    const raf = requestAnimationFrame(observeAll);
+    let raf = requestAnimationFrame(observeAll);
 
-    const mutations = new MutationObserver(observeAll);
+    // Coalesce into at most one querySelectorAll pass per frame — a route
+    // change can insert hundreds of nodes across many mutation batches, and
+    // running a full-document query per batch was blocking the main thread
+    // long enough to visibly stall the route-transition overlay's fade-out.
+    let scheduled = false;
+    const scheduleObserveAll = () => {
+      if (scheduled) return;
+      scheduled = true;
+      requestAnimationFrame(() => {
+        scheduled = false;
+        observeAll();
+      });
+    };
+
+    const mutations = new MutationObserver(scheduleObserveAll);
     mutations.observe(document.body, { childList: true, subtree: true });
 
     return () => {

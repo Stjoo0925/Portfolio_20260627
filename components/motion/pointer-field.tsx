@@ -1,23 +1,32 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { useGalaxyStore } from "@/store/galaxy-store";
 
 /**
  * Full-viewport pointer chrome: a faint white flashlight glow plus a
  * 1px crosshair that follows the cursor. Writes transforms directly to
  * the DOM inside rAF — no React re-renders.
+ *
+ * Only active on route/detail pages ("project" phase). The galaxy view
+ * already has its own cursor language (the 3D gravity lens that pulls
+ * background stars toward the hovered node) — running both at once made
+ * the cursor feel like it was doing two unrelated things at the same time.
  */
 export function PointerField() {
   const rootRef = useRef<HTMLDivElement>(null);
   const glowRef = useRef<HTMLDivElement>(null);
   const lineVRef = useRef<HTMLDivElement>(null);
   const lineHRef = useRef<HTMLDivElement>(null);
+  const active = useGalaxyStore((state) => state.phase === "project");
 
   useEffect(() => {
     if (
+      !active ||
       window.matchMedia("(pointer: coarse)").matches ||
       window.matchMedia("(prefers-reduced-motion: reduce)").matches
     ) {
+      rootRef.current?.removeAttribute("data-active");
       return;
     }
 
@@ -57,7 +66,7 @@ export function PointerField() {
       document.documentElement.removeEventListener("pointerleave", handleLeave);
       if (frame) cancelAnimationFrame(frame);
     };
-  }, []);
+  }, [active]);
 
   return (
     <div ref={rootRef} className="pointer-field" aria-hidden>

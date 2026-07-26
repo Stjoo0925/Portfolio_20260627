@@ -14,7 +14,6 @@ import { ConnectionLines } from "@/components/galaxy/connection-lines";
 import { ElectronSystem } from "@/components/galaxy/electron-system";
 import { InteractiveNodes } from "@/components/galaxy/interactive-nodes";
 import { CameraRig } from "@/components/galaxy/camera-rig";
-import { MorphedRouteNode } from "@/components/galaxy/morphed-route-node";
 import { clamp01, useGalaxyStore } from "@/store/galaxy-store";
 
 const BLOOM_BASE = 0.75;
@@ -81,7 +80,6 @@ export default function GalaxyCanvas() {
       <ConnectionLines />
       <ElectronSystem />
       <InteractiveNodes />
-      <MorphedRouteNode />
       <CameraRig />
       {/* Cinematic glow on capable hardware only; low-perf devices keep the
           cheaper additive-sprite glow that is always present underneath */}

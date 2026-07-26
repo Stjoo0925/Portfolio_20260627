@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
-import { nodeById } from "@/lib/galaxy/nodes";
+import { findNodeByPathname, nodeById } from "@/lib/galaxy/nodes";
 import {
   clamp01,
   easeInOutCubic,
@@ -102,11 +102,14 @@ export function CameraRig() {
     const now = performance.now();
     const t = state.clock.elapsedTime;
 
-    // Idle target: slow drift + pointer parallax + drag/wheel offsets
+    // Idle target: slow drift + pointer parallax + drag/wheel offsets.
+    // Amplitude kept low so the idle scene settles rather than perpetually
+    // drifting — the warp/selection moments should read as the exception,
+    // not one motion among many of similar intensity.
     scratch.desired.set(
-      BASE_POSITION.x + Math.sin(t * 0.05) * 0.7 + state.pointer.x * 1.5 + r.dragYaw * 7,
-      BASE_POSITION.y + Math.cos(t * 0.04) * 0.45 - state.pointer.y * 0.9 - r.dragPitch * 4,
-      BASE_POSITION.z + Math.sin(t * 0.03) * 0.6 + r.depth,
+      BASE_POSITION.x + Math.sin(t * 0.05) * 0.4 + state.pointer.x * 1.5 + r.dragYaw * 7,
+      BASE_POSITION.y + Math.cos(t * 0.04) * 0.25 - state.pointer.y * 0.9 - r.dragPitch * 4,
+      BASE_POSITION.z + Math.sin(t * 0.03) * 0.35 + r.depth,
     );
     scratch.desiredLook.set(
       BASE_LOOK.x + state.pointer.x * 0.9 + r.dragYaw * 3,
@@ -187,11 +190,27 @@ export function CameraRig() {
       camera.position.lerpVectors(r.returnFromPos, scratch.desired, p);
       r.look.lerpVectors(r.returnFromLook, scratch.desiredLook, p);
     } else if (phase === "project") {
-      // Reset to the idle vantage under the opaque route overlay so the
-      // dimmed galaxy reads as a calm backdrop (and detail → detail
-      // navigation never starts pressed up against a sphere)
-      camera.position.copy(scratch.desired);
-      r.look.copy(scratch.desiredLook);
+      // 3D Spatial Camera Glide: Smoothly lerp camera position and focus
+      // toward active route node's 3D coordinates on navbar/route navigation
+      const activeNode = selectedId
+        ? nodeById.get(selectedId)
+        : (typeof window !== "undefined" ? findNodeByPathname(window.location.pathname) : null);
+
+      if (activeNode) {
+        scratch.desired.set(
+          activeNode.position[0] * 0.45 + Math.sin(t * 0.05) * 0.5 + state.pointer.x * 1.2,
+          activeNode.position[1] * 0.45 + 0.4 + Math.cos(t * 0.04) * 0.35 - state.pointer.y * 0.7,
+          18,
+        );
+        scratch.desiredLook.set(
+          activeNode.position[0] * 0.25 + state.pointer.x * 0.6,
+          activeNode.position[1] * 0.25 - state.pointer.y * 0.4,
+          0,
+        );
+      }
+
+      camera.position.lerp(scratch.desired, damp);
+      r.look.lerp(scratch.desiredLook, damp);
     }
 
     camera.lookAt(r.look);

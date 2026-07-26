@@ -7,7 +7,7 @@ import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Html } from "@react-three/drei";
 import * as THREE from "three";
-import { galaxyNodes, type GalaxyNode } from "@/lib/galaxy/nodes";
+import { galaxyNodes, nodeById, type GalaxyNode } from "@/lib/galaxy/nodes";
 import {
   CONVERGE_MS,
   clamp01,
@@ -91,6 +91,8 @@ function InteractiveNode({ node }: { node: GalaxyNode }) {
       }),
     [node.accent],
   );
+  const restScale = useRef(new THREE.Vector3(1, 1, 1));
+  const restPosition = useRef(new THREE.Vector3());
   const glowRef = useRef<THREE.Sprite>(null);
   const ringRef = useRef<THREE.Mesh>(null);
   const ringMaterialRef = useRef<THREE.MeshBasicMaterial>(null);
@@ -131,9 +133,42 @@ function InteractiveNode({ node }: { node: GalaxyNode }) {
       focusMs,
     } = useGalaxyStore.getState();
 
-    group.visible = phase !== "project";
-    if (!group.visible) return;
+    group.visible = true;
     const now = performance.now();
+
+    if (phase === "project") {
+      const activeNode = selectedId ? nodeById.get(selectedId) : null;
+      const isCurrentRouteNode = activeNode ? activeNode.id === node.id : false;
+      const damp = 1 - Math.exp(-delta * 6);
+
+      const targetOpacity = isCurrentRouteNode ? 1.0 : 0.32;
+      const targetEmissive = isCurrentRouteNode ? 0.45 : 0.05;
+
+      material.opacity += (targetOpacity - material.opacity) * damp;
+      material.emissiveIntensity += (targetEmissive - material.emissiveIntensity) * damp;
+      material.emissive.lerp(accentColor, damp);
+
+      // "focusing" grows this sphere to swallow the camera (see EXPAND_RADIUS
+      // below); without settling it back to its resting scale/position here,
+      // it stays stuck oversized for as long as the route page is visible.
+      const t = state.clock.elapsedTime;
+      const floatY = Math.sin(t * 0.3 + node.position[0]) * 0.08;
+      restPosition.current.set(node.position[0], node.position[1] + floatY, node.position[2]);
+      group.position.lerp(restPosition.current, damp);
+      group.scale.lerp(restScale.current, damp);
+
+      if (glowRef.current) {
+        const spriteMaterial = glowRef.current.material as THREE.SpriteMaterial;
+        const glowTarget = isCurrentRouteNode ? 0.42 : 0.08;
+        spriteMaterial.opacity += (glowTarget - spriteMaterial.opacity) * damp;
+      }
+      if (ringMaterialRef.current) {
+        const ringTarget = isCurrentRouteNode ? 0.5 : 0;
+        ringMaterialRef.current.opacity += (ringTarget - ringMaterialRef.current.opacity) * damp;
+      }
+      if (labelRef.current) labelRef.current.dataset.visible = "false";
+      return;
+    }
 
     // Opening: the node condenses out of the infalling stars — scale-up from
     // nothing with a bright birth flash that decays into the idle look.
@@ -168,23 +203,16 @@ function InteractiveNode({ node }: { node: GalaxyNode }) {
     const damp = 1 - Math.exp(-delta * 8);
 
     // Idle float + subtle rotation
-    if (phase !== "project") {
-      const t = state.clock.elapsedTime;
-      const floatY = Math.sin(t * 0.3 + node.position[0]) * 0.14;
-      group.position.set(node.position[0], node.position[1] + floatY, node.position[2]);
-      if (sphereRef.current) sphereRef.current.rotation.y += delta * 0.08;
-    }
+    const t = state.clock.elapsedTime;
+    const floatY = Math.sin(t * 0.3 + node.position[0]) * 0.08;
+    group.position.set(node.position[0], node.position[1] + floatY, node.position[2]);
+    if (sphereRef.current) sphereRef.current.rotation.y += delta * 0.08;
 
-    // Scale: hover 1.05; the selected node expands while the camera flies in,
-    // then quietly deflates behind the opened page (the overlay hides the cut)
+    // Scale: hover 1.05; the selected node expands while the camera flies in
     const targetScale = isActive ? 1.05 : 1;
     if (isSelected && phase === "focusing") {
       const p = easeOutExpo(clamp01((now - phaseStart) / focusMs));
       group.scale.setScalar(1 + (EXPAND_RADIUS / node.radius - 1) * p);
-    } else if (phase === "project") {
-      // The route enters under an opaque overlay. Reset here so the enlarged
-      // transition sphere cannot linger behind the editorial page reveal.
-      group.scale.setScalar(1);
     } else {
       group.scale.lerp(
         new THREE.Vector3(targetScale, targetScale, targetScale),
@@ -247,7 +275,7 @@ function InteractiveNode({ node }: { node: GalaxyNode }) {
 
     // Label: visible on hover/focus, or while this node is being opened
     if (labelRef.current) {
-      const show = (isActive || (isSelected && phase === "converging")) && phase !== "project";
+      const show = isActive || (isSelected && phase === "converging");
       labelRef.current.dataset.visible = show ? "true" : "false";
     }
   });

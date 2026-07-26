@@ -158,6 +158,7 @@ export const contactSchema = z.object({
   body: z.string(),
   email: z.string(),
   location: z.string(),
+  closing: z.string().optional(),
   channels: z.array(
     z.object({ name: z.string(), href: z.string(), icon: z.string() }),
   ),
