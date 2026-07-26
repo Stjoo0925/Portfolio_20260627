@@ -64,6 +64,13 @@ type GalaxyStore = {
   webglAvailable: boolean;
   /** True once the WebGL canvas has been created and can actually render. */
   canvasReady: boolean;
+  /** True once the client has decided the real opening/no-opening phase.
+   *  The store's default phase ("exploring") is only a safe placeholder for
+   *  server-rendered markup — GalaxyIntro also requires this flag before it
+   *  will render visible, so the SSR/pre-hydration HTML (which can't know
+   *  whether the opening should play) never paints the intro text and then
+   *  immediately hides it once JS decides "forming" after all. */
+  clientPhaseResolved: boolean;
   /** Active opening duration; set when forming is triggered (perf-dependent,
    *  dev-overridable via ?formingMs= for tuning/verification). */
   formingMs: number;
@@ -80,6 +87,7 @@ type GalaxyStore = {
   setPerfLevel: (value: "high" | "low") => void;
   setWebglAvailable: (value: boolean) => void;
   setCanvasReady: (value: boolean) => void;
+  setClientPhaseResolved: (value: boolean) => void;
   setFormingMs: (value: number) => void;
   setFocusMs: (value: number) => void;
   setReturnMs: (value: number) => void;
@@ -95,6 +103,7 @@ export const useGalaxyStore = create<GalaxyStore>((set) => ({
   perfLevel: "high",
   webglAvailable: true,
   canvasReady: false,
+  clientPhaseResolved: false,
   formingMs: FORMING_MS,
   focusMs: FOCUS_MS,
   returnMs: RETURN_MS,
@@ -111,6 +120,7 @@ export const useGalaxyStore = create<GalaxyStore>((set) => ({
   setPerfLevel: (perfLevel) => set({ perfLevel }),
   setWebglAvailable: (webglAvailable) => set({ webglAvailable }),
   setCanvasReady: (canvasReady) => set({ canvasReady }),
+  setClientPhaseResolved: (clientPhaseResolved) => set({ clientPhaseResolved }),
   setFormingMs: (formingMs) => set({ formingMs }),
   setFocusMs: (focusMs) => set({ focusMs }),
   setReturnMs: (returnMs) => set({ returnMs }),

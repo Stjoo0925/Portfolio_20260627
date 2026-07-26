@@ -14,8 +14,15 @@ import type { Hero } from "@/lib/content/schema";
 export function GalaxyIntro({ name, hero }: { name: string; hero: Hero }) {
   const phase = useGalaxyStore((state) => state.phase);
   const webglAvailable = useGalaxyStore((state) => state.webglAvailable);
+  const clientPhaseResolved = useGalaxyStore((state) => state.clientPhaseResolved);
 
-  const visible = phase === "exploring";
+  // Requires clientPhaseResolved, not just phase === "exploring": the
+  // store's default phase IS "exploring" (a safe placeholder for
+  // server-rendered markup), so before the client has actually decided
+  // whether the opening should play, this would otherwise be visually
+  // "true" in the pre-hydration HTML — painting the full intro text, then
+  // hiding it a moment later once JS runs and picks "forming" instead.
+  const visible = phase === "exploring" && clientPhaseResolved;
 
   return (
     <div className="galaxy-intro hierarchy-home" data-visible={visible ? "true" : "false"}>

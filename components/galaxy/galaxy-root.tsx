@@ -134,6 +134,11 @@ export function GalaxyRoot() {
   // happen before paint to avoid a flash of the (default-visible) intro.
   useLayoutEffect(() => {
     const store = useGalaxyStore.getState();
+    // Marks that the client has actually looked at hasSeenOpening() /
+    // reducedMotion / webglAvailable and committed a real phase decision —
+    // see the store field's doc comment for why GalaxyIntro gates on this
+    // instead of trusting the default "exploring" phase directly.
+    store.setClientPhaseResolved(true);
 
     if (pathname === "/") {
       // Don't clobber an opening sequence already in flight (e.g. the
